@@ -85,7 +85,6 @@
       <file file_name="../../../../../modules/nrfx/drivers/src/nrfx_ppi.c" />
       <file file_name="../../../../../modules/nrfx/drivers/src/nrfx_clock.c" />
       <file file_name="../../../../../integration/nrfx/legacy/nrf_drv_clock.c" />
-      <file file_name="../../../../../components/drivers_nrf/radio_config/radio_config.c" />
     </folder>
     <folder Name="Board Support">
       <file file_name="../../../../../components/libraries/bsp/bsp.c" />

@@ -1,54 +1,73 @@
-#include "nrf_drv_spi.h"
-#include "app_util_platform.h"
+#include "sdk_config.h"
+
+#include "nrf_drv_spis.h"
+//#include "app_util_platform.h"
 #include "nrf_gpio.h"
-#include "nrf_delay.h"
+//#include "nrf_delay.h"
 #include "boards.h"
 #include "app_error.h"
+
 #include <string.h>
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
 
+#include "nrf_drv_clock.h"
+#include "app_timer.h"
+
+#include "radio.h"
+
+/*
 #define SPI_INSTANCE  0 /**< SPI instance index. */
-static const nrf_drv_spi_t spi = NRF_DRV_SPI_INSTANCE(SPI_INSTANCE);  /**< SPI instance. */
-static volatile bool spi_xfer_done;  /**< Flag used to indicate that SPI instance completed the transfer. */
+/*static const nrf_drv_spi_t spi = NRF_DRV_SPI_INSTANCE(SPI_INSTANCE);  /**< SPI instance. */
+/*static volatile bool spi_xfer_done;  /**< Flag used to indicate that SPI instance completed the transfer. */
+
+
+//#define SPIS_INSTANCE 1 /**< SPIS instance index. */
+//static const nrf_drv_spis_t spis = NRF_DRV_SPIS_INSTANCE(SPIS_INSTANCE); /**< SPIS instance. */
+
+//static volatile bool spis_xfer_done;
 
 #define TEST_STRING "Test"
 static uint8_t       m_tx_buf[] = TEST_STRING;           /**< TX buffer. */
 static uint8_t       m_rx_buf[sizeof(TEST_STRING) + 1];    /**< RX buffer. */
 static const uint8_t m_length = sizeof(m_tx_buf);        /**< Transfer length. */
 
+
+
+static radio_config_t m_config;
+
+
 /**
  * @brief SPI user event handler.
  * @param event
- */
-void spi_event_handler(nrf_drv_spi_evt_t const * p_event,
-                       void *                    p_context)
+ *//*
+void spis_event_handler(nrf_drv_spis_event_t event)
 {
-    spi_xfer_done = true;
-    NRF_LOG_INFO("Transfer completed.");
-    if (m_rx_buf[0] != 0)
+    if (event.evt_type == NRF_DRV_SPIS_XFER_DONE)
     {
-        NRF_LOG_INFO(" Received:");
-        NRF_LOG_HEXDUMP_INFO(m_rx_buf, strlen((const char *)m_rx_buf));
+        spis_xfer_done = true;
+        NRF_LOG_INFO(" Transfer completed. Received: %s",(uint32_t)m_rx_buf);
+        bsp_board_led_invert(BSP_BOARD_LED_1);
+        //TODO analyze packet
+        //TODO set ready to send flag
     }
-    bsp_board_led_invert(BSP_BOARD_LED_1);
 }
 
 
 /**@brief Function for configuring SPI.
- */
-static void spi_init(void)
+ *//*
+static void spis_init(void)
 {
     ret_code_t ret;
 
-    nrf_drv_spi_config_t spi_config = NRF_DRV_SPI_DEFAULT_CONFIG;
-    spi_config.ss_pin   = SPI_SS_PIN;
-    spi_config.miso_pin = SPI_MISO_PIN;
-    spi_config.mosi_pin = SPI_MOSI_PIN;
-    spi_config.sck_pin  = SPI_SCK_PIN;
+    nrf_drv_spis_config_t spis_config = NRF_DRV_SPIS_DEFAULT_CONFIG;
+    spis_config.csn_pin               = APP_SPIS_CS_PIN;
+    spis_config.miso_pin              = APP_SPIS_MISO_PIN;
+    spis_config.mosi_pin              = APP_SPIS_MOSI_PIN;
+    spis_config.sck_pin               = APP_SPIS_SCK_PIN;
 
-    ret = nrf_drv_spi_init(&spi, &spi_config, spi_event_handler, NULL);
+    ret = nrf_drv_spis_init(&spis, &spis_config, spis_event_handler);
     APP_ERROR_CHECK(ret);
 }
 
@@ -61,18 +80,60 @@ static void log_init(void)
 
     APP_ERROR_CHECK(err_code);
 
-    //NRF_LOG_DEFAULT_BACKENDS_INIT(); //??
+    NRF_LOG_DEFAULT_BACKENDS_INIT(); //??
 }
 
 
-//TODO move to libuarte?
+// TODO is nrf drv legacy? or maybe init as NRF_CLOCK what is difference
+/**@brief Function for initializing oscillators.
+ */
+static void clock_init(void)
+{
+    ret_code_t err_code = nrf_drv_clock_init();
+    APP_ERROR_CHECK(err_code);
+    
+    // low frequency clock - app timer - used by cli and etc
+    nrf_drv_clock_lfclk_request(NULL);
+
+    // high frequency clock - radio
+    nrf_drv_clock_hfclk_request(NULL); 
+
+}
+
+
 int main(void)
 {
+    uint32_t err_code;
+
     bsp_board_init(BSP_INIT_LEDS);
 
-    log_init();
+    clock_init();
 
-    spi_init();
+    err_code = app_timer_init();
+
+    APP_ERROR_CHECK(err_code);
+
+    //log_init();
+
+    bsp_board_led_invert(BSP_BOARD_LED_0);
+
+
+    radio_init(&m_config);
+
+    bsp_board_led_invert(BSP_BOARD_LED_1);
+
+    radio_rx(NRF_RADIO_MODE_NRF_250KBIT, 11);
+
+    bsp_board_led_invert(BSP_BOARD_LED_2);
+
+
+    while (true)
+    {
+        __WFI();
+        //bsp_board_led_invert(BSP_BOARD_LED_0);
+    }
+
+    //spi_init();
 
     //TODO radio receiver
         

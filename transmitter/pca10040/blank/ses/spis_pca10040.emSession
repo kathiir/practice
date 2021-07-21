@@ -69,9 +69,9 @@
   <Watches active="0" update="Never"/>
  </Watch4>
  <Files>
-  <SessionOpenFile windowGroup="DockEditLeft" x="5" y="131" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../main.c" selected="0" top="177" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="6" y="18" useTextEdit="1" openedFrom="C:/nRF5_SDK_17.0.2_d674dde/projects/transmitter/radio.c" useBinaryEdit="0" left="0" path="../../../radio.h" selected="0" top="0" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="1" y="16" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../radio.c" selected="1" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="11" useTextEdit="1" openedFrom="C:/nRF5_SDK_17.0.2_d674dde/projects/transmitter/rcea_cmd.c" useBinaryEdit="0" left="0" path="../../../radio.c" selected="1" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="7" y="183" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../main.c" selected="0" top="154" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="23" y="34" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../rcea_cmd.c" selected="0" top="24" codecName="Default"/>
  </Files>
  <ARMCrossStudioWindow activeProject="transmitter_pca10040" fileDialogDefaultFilter="*.c;*.cpp;*.cxx;*.cc;*.h;*.hpp;*.hxx" autoConnectTarget="J-Link" buildConfiguration="Release" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="C:/nRF5_SDK_17.0.2_d674dde/components/drivers_nrf/radio_config" debugSearchPath="" autoConnectCapabilities="3199"/>
 </session>

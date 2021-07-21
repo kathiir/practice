@@ -17,7 +17,6 @@
 
 #include "nrf_drv_clock.h"
 
-#include "radio_config.h"
 
 /** CLI */
 #define CLI_LOG_QUEUE_SIZE  (4)
@@ -29,7 +28,7 @@ NRF_CLI_DEF(m_cli_libuarte,
             '\r',
             CLI_LOG_QUEUE_SIZE);
 
-
+//TODO to spi
 #define SPIS_INSTANCE 1 /**< SPIS instance index. */
 static const nrf_drv_spis_t spis = NRF_DRV_SPIS_INSTANCE(SPIS_INSTANCE); /**< SPIS instance. */
 
@@ -137,21 +136,6 @@ static void clock_init(void)
 }
 
 
-// TODO init radio mode + initial params. check if supported
-// TODO cannot find ieee mode on this plate. maybe old config and new revision???
-// WARNING otherwise idk where to search/manually add files for nrf52840??? 
-// TODO do it with radio config or through nvic - read more
-/**@brief Function for initializing radio.
- */
-static void radio_init(void)
-{
-    radio_configure();
-    NRF_RADIO->MODE = NRF_RADIO_MODE_NRF_250KBIT;
-    //NRF_RADIO_MODE_IEEE802154_250KBIT;
-}
-
-
-//TODO change compiler to arm-gcc + create makefile - move to vscode from segger? see plugin + set toolchain
 //TODO sdk_config - legacy support or maybe change some vars - read more
 //TODO also pca10040 does not support ieee_802154_250 and ieee at all
 //TODO idk what to do about that
@@ -171,17 +155,17 @@ int main(void)
     
     APP_ERROR_CHECK(err_code);
 
+    //spis_init();
 
+/*
     radio_init();
+*/
 
-
-    //rcea_cmd_init(); 
+    rcea_cmd_init(); 
     //TODO + check if all init
 
     cli_init();
     cli_start();
-
-
 
     
     NRF_LOG_RAW_INFO("Radio channel error analyzer started.\n");

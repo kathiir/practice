@@ -5,13 +5,12 @@
 #include "nrf_log.h"
 
 
+#include "boards.h"
 
-static uint8_t m_tx_packet[RADIO_MAX_PAYLOAD_LEN];
-static uint32_t m_tx_packet_cnt;
+static uint8_t m_rx_packet[RADIO_MAX_PAYLOAD_LEN];
 
 
 static const radio_config_t * m_p_config = NULL;
-                                 
 
 
 static void radio_disable(void)
@@ -21,6 +20,8 @@ static void radio_disable(void)
     nrf_radio_event_clear(NRF_RADIO_EVENT_DISABLED);
 
     nrf_radio_task_trigger(NRF_RADIO_TASK_DISABLE);
+
+
     while (!nrf_radio_event_check(NRF_RADIO_EVENT_DISABLED))
     {
         /* wait */
@@ -61,9 +62,9 @@ static void radio_config(nrf_radio_mode_t mode)
     nrf_radio_modecnf0_set(false, RADIO_MODECNF0_DTX_Center);
     nrf_radio_crc_configure(RADIO_CRCCNF_LEN_Disabled, NRF_RADIO_CRC_ADDR_INCLUDE, 0);
 
-
     nrf_radio_txaddress_set(0);
     nrf_radio_rxaddresses_set(1);
+
 
 // TODO 
     nrf_radio_prefix0_set(0xCC);
@@ -71,7 +72,7 @@ static void radio_config(nrf_radio_mode_t mode)
 
     memset(&packet_conf, 0, sizeof(packet_conf));
     packet_conf.lflen = RADIO_LENGTH_LENGTH_FIELD;
-    packet_conf.maxlen = (sizeof(m_tx_packet) - 1);
+    packet_conf.maxlen = (sizeof(m_rx_packet) - 1);
     packet_conf.statlen = 0;
     packet_conf.balen = 4;
     packet_conf.big_endian = true;
@@ -110,101 +111,80 @@ static void radio_config(nrf_radio_mode_t mode)
 }
 
 
-static void generate_packet(nrf_radio_mode_t mode)
-{
-    radio_config(mode);
-
-
-#if SUPPORT_IEEE802154_250KBIT
-    if (mode == NRF_RADIO_MODE_IEEE802154_250KBIT)
-    {
-        m_tx_packet[0] = IEEE_MAX_PAYLOAD_LEN - 1;
-    }
-    else
-    {
-        m_tx_packet[0] = sizeof(m_tx_packet) - 1;
-    }
-#else
-    m_tx_packet[0] = sizeof(m_tx_packet) - 1;
-#endif
-
-    for (uint8_t i = 0; i < sizeof(m_tx_packet) - 1; i++)
-    {
-        
-        m_tx_packet[i + 1] = 0xCC;
-    }
-
-    nrf_radio_packetptr_set(m_tx_packet);
-}
-
-
-void send_packet(nrf_radio_mode_t mode,
-                                       nrf_radio_txpower_t txpower,
-                                       uint8_t channel)
+void radio_rx(nrf_radio_mode_t mode, uint8_t channel)
 {
     radio_disable();
-    generate_packet(mode);
-
-    switch (mode)
-    {
-#if SUPPORT_IEEE802154_250KBIT
-        case NRF_RADIO_MODE_IEEE802154_250KBIT:
-            nrf_radio_shorts_enable(NRF_RADIO_SHORT_READY_START_MASK |
-                                    NRF_RADIO_SHORT_PHYEND_START_MASK);
-            break;
-#endif
-        default:
-#ifdef NRF52832_XXAA
-        case NRF_RADIO_MODE_NRF_250KBIT:
-#endif
-            nrf_radio_shorts_enable(NRF_RADIO_SHORT_READY_START_MASK |
-                                    NRF_RADIO_SHORT_END_START_MASK);
-            break;
-    }
 
     nrf_radio_mode_set(mode);
-    nrf_radio_txpower_set(txpower);
 
+    nrf_radio_shorts_enable(NRF_RADIO_SHORT_READY_START_MASK |
+                            NRF_RADIO_SHORT_END_START_MASK);
+
+    nrf_radio_packetptr_set(m_rx_packet);
+
+    radio_config(mode);
     radio_channel_set(mode, channel);
 
+    nrf_radio_int_enable(NRF_RADIO_INT_CRCOK_MASK);
 
-    nrf_radio_event_clear(NRF_RADIO_EVENT_END);
-    nrf_radio_int_enable(NRF_RADIO_INT_END_MASK);
-
-    nrf_radio_task_trigger(NRF_RADIO_TASK_TXEN);
+    nrf_radio_int_enable(NRF_RADIO_INT_CRCERROR_MASK);
 
 
-    while (!nrf_radio_event_check(NRF_RADIO_EVENT_END))
-    {
-        /* wait */
-    }
+    
+
+    nrf_radio_task_trigger(NRF_RADIO_TASK_RXEN);
+
+
+
+    //bsp_board_led_invert(BSP_BOARD_LED_3);
+
+
+    /* TODO busy loop on receive and init*/
 
 }
 
 
 void RADIO_IRQHandler(void)
 {
-    if (nrf_radio_event_check(NRF_RADIO_EVENT_END))
+
+
+    bsp_board_led_invert(BSP_BOARD_LED_3);
+
+    //what if not received at all. timeout?
+
+    if (nrf_radio_event_check(NRF_RADIO_EVENT_CRCOK))
     {
-        nrf_radio_event_clear(NRF_RADIO_EVENT_END);
+        nrf_radio_event_clear(NRF_RADIO_EVENT_CRCOK);
+       
 
-        
+        bsp_board_led_invert(BSP_BOARD_LED_2);
 
-        NRF_LOG_RAW_INFO("Delivered.\n");
-
-        radio_disable();
-        
     }
+
+    if (nrf_radio_event_check(NRF_RADIO_EVENT_CRCERROR))
+    {
+        nrf_radio_event_clear(NRF_RADIO_EVENT_CRCERROR);
+        
+
+        bsp_board_led_invert(BSP_BOARD_LED_1);
+
+    }
+
+
+
 }
 
 
-void radio_init(radio_config_t * p_config)
-{
+void radio_init(radio_config_t * p_config){
+
+    bsp_board_led_invert(BSP_BOARD_LED_1);
+
     if (!m_p_config)
     {
-
         NVIC_EnableIRQ(RADIO_IRQn);
         __enable_irq();
+
+        bsp_board_led_invert(BSP_BOARD_LED_3);
 
         m_p_config = p_config;
     }
@@ -212,4 +192,6 @@ void radio_init(radio_config_t * p_config)
     {
         // Already initialized, do nothing
     }
+
 }
+
