@@ -3,7 +3,9 @@
 
 #include "nrf_radio.h"
 
-
+/*
+#include "nrfx_spis.h"
+*/
 #ifdef __cplusplus
 extern "C" {
 #endif

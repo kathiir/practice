@@ -44,8 +44,17 @@ typedef struct {
 void radio_init(radio_config_t * p_config);
 
 void send_packet(nrf_radio_mode_t mode,
-                                       nrf_radio_txpower_t txpower,
-                                       uint8_t channel);
+                 nrf_radio_txpower_t txpower,
+                 uint8_t channel);
+/*
+void send_packet();
+*/
+void radio_config_mode(nrf_radio_mode_t mode);
+
+void radio_config_channel(uint8_t channel);
+
+void radio_config_tx_power(nrf_radio_txpower_t txpower);
+
 
 #ifdef __cplusplus
 }

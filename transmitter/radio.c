@@ -130,17 +130,39 @@ static void generate_packet(nrf_radio_mode_t mode)
 
     for (uint8_t i = 0; i < sizeof(m_tx_packet) - 1; i++)
     {
-        
-        m_tx_packet[i + 1] = 0xCC;
+        m_tx_packet[i + 1] = 0xAF;
     }
 
     nrf_radio_packetptr_set(m_tx_packet);
 }
 
 
+void radio_config_mode(nrf_radio_mode_t mode) {
+
+    radio_disable();
+    radio_config(mode);
+    
+    
+    nrf_radio_mode_set(mode);
+}
+
+void radio_config_channel(uint8_t channel) {
+    radio_disable();
+
+    radio_channel_set(m_p_config->mode, channel);
+
+}
+
+void radio_config_tx_power(nrf_radio_txpower_t txpower) {
+    radio_disable();
+    nrf_radio_txpower_set(txpower);
+}
+
+
+// TODO
 void send_packet(nrf_radio_mode_t mode,
-                                       nrf_radio_txpower_t txpower,
-                                       uint8_t channel)
+                 nrf_radio_txpower_t txpower,
+                 uint8_t channel)
 {
     radio_disable();
     generate_packet(mode);
@@ -181,6 +203,41 @@ void send_packet(nrf_radio_mode_t mode,
 
 }
 
+/*
+void send_packet()
+{
+    generate_packet(m_p_config->mode);
+
+    switch (m_p_config->mode)
+    {
+#if SUPPORT_IEEE802154_250KBIT
+        case NRF_RADIO_MODE_IEEE802154_250KBIT:
+            nrf_radio_shorts_enable(NRF_RADIO_SHORT_READY_START_MASK |
+                                    NRF_RADIO_SHORT_PHYEND_START_MASK);
+            break;
+#endif
+        default:
+#ifdef NRF52832_XXAA
+        case NRF_RADIO_MODE_NRF_250KBIT:
+#endif
+            nrf_radio_shorts_enable(NRF_RADIO_SHORT_READY_START_MASK |
+                                    NRF_RADIO_SHORT_END_START_MASK);
+            break;
+    }
+
+
+    nrf_radio_event_clear(NRF_RADIO_EVENT_END);
+    nrf_radio_int_enable(NRF_RADIO_INT_END_MASK);
+
+    nrf_radio_task_trigger(NRF_RADIO_TASK_TXEN);
+
+    while (!nrf_radio_event_check(NRF_RADIO_EVENT_END))
+    {
+        /* wait */ /*
+    }
+
+}
+*/
 
 void RADIO_IRQHandler(void)
 {
@@ -192,6 +249,8 @@ void RADIO_IRQHandler(void)
 
         NRF_LOG_RAW_INFO("Delivered.\n");
 
+        
+        //check num of packets
         radio_disable();
         
     }
@@ -204,7 +263,7 @@ void radio_init(radio_config_t * p_config)
     {
 
         NVIC_EnableIRQ(RADIO_IRQn);
-        __enable_irq();
+        //__enable_irq();
 
         m_p_config = p_config;
     }

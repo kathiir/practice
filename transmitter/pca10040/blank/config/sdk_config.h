@@ -52,7 +52,7 @@
 // <h> SPI_CONFIGURATION - Spi configuration
 
 //==========================================================
-// <o> APP_SPIS_SCK_PIN  - Pin number
+// <o> SPI_SCK_PIN  - Pin number
  
 // <0=> 0 (P0.0) 
 // <1=> 1 (P0.1) 
@@ -86,13 +86,29 @@
 // <29=> 29 (P0.29) 
 // <30=> 30 (P0.30) 
 // <31=> 31 (P0.31) 
+// <32=> 32 (P1.0) 
+// <33=> 33 (P1.1) 
+// <34=> 34 (P1.2) 
+// <35=> 35 (P1.3) 
+// <36=> 36 (P1.4) 
+// <37=> 37 (P1.5) 
+// <38=> 38 (P1.6) 
+// <39=> 39 (P1.7) 
+// <40=> 40 (P1.8) 
+// <41=> 41 (P1.9) 
+// <42=> 42 (P1.10) 
+// <43=> 43 (P1.11) 
+// <44=> 44 (P1.12) 
+// <45=> 45 (P1.13) 
+// <46=> 46 (P1.14) 
+// <47=> 47 (P1.15) 
 // <4294967295=> Not connected 
 
-#ifndef APP_SPIS_SCK_PIN
-#define APP_SPIS_SCK_PIN 26
+#ifndef SPI_SCK_PIN
+#define SPI_SCK_PIN 26
 #endif
 
-// <o> APP_SPIS_MISO_PIN  - Pin number
+// <o> SPI_MISO_PIN  - Pin number
  
 // <0=> 0 (P0.0) 
 // <1=> 1 (P0.1) 
@@ -126,13 +142,29 @@
 // <29=> 29 (P0.29) 
 // <30=> 30 (P0.30) 
 // <31=> 31 (P0.31) 
+// <32=> 32 (P1.0) 
+// <33=> 33 (P1.1) 
+// <34=> 34 (P1.2) 
+// <35=> 35 (P1.3) 
+// <36=> 36 (P1.4) 
+// <37=> 37 (P1.5) 
+// <38=> 38 (P1.6) 
+// <39=> 39 (P1.7) 
+// <40=> 40 (P1.8) 
+// <41=> 41 (P1.9) 
+// <42=> 42 (P1.10) 
+// <43=> 43 (P1.11) 
+// <44=> 44 (P1.12) 
+// <45=> 45 (P1.13) 
+// <46=> 46 (P1.14) 
+// <47=> 47 (P1.15) 
 // <4294967295=> Not connected 
 
-#ifndef APP_SPIS_MISO_PIN
-#define APP_SPIS_MISO_PIN 30
+#ifndef SPI_MISO_PIN
+#define SPI_MISO_PIN 30
 #endif
 
-// <o> APP_SPIS_MOSI_PIN  - Pin number
+// <o> SPI_MOSI_PIN  - Pin number
  
 // <0=> 0 (P0.0) 
 // <1=> 1 (P0.1) 
@@ -166,13 +198,29 @@
 // <29=> 29 (P0.29) 
 // <30=> 30 (P0.30) 
 // <31=> 31 (P0.31) 
+// <32=> 32 (P1.0) 
+// <33=> 33 (P1.1) 
+// <34=> 34 (P1.2) 
+// <35=> 35 (P1.3) 
+// <36=> 36 (P1.4) 
+// <37=> 37 (P1.5) 
+// <38=> 38 (P1.6) 
+// <39=> 39 (P1.7) 
+// <40=> 40 (P1.8) 
+// <41=> 41 (P1.9) 
+// <42=> 42 (P1.10) 
+// <43=> 43 (P1.11) 
+// <44=> 44 (P1.12) 
+// <45=> 45 (P1.13) 
+// <46=> 46 (P1.14) 
+// <47=> 47 (P1.15) 
 // <4294967295=> Not connected 
 
-#ifndef APP_SPIS_MOSI_PIN
-#define APP_SPIS_MOSI_PIN 29
+#ifndef SPI_MOSI_PIN
+#define SPI_MOSI_PIN 29
 #endif
 
-// <o> APP_SPIS_SS_PIN  - Pin number
+// <o> SPI_SS_PIN  - Pin number
  
 // <0=> 0 (P0.0) 
 // <1=> 1 (P0.1) 
@@ -206,13 +254,29 @@
 // <29=> 29 (P0.29) 
 // <30=> 30 (P0.30) 
 // <31=> 31 (P0.31) 
+// <32=> 32 (P1.0) 
+// <33=> 33 (P1.1) 
+// <34=> 34 (P1.2) 
+// <35=> 35 (P1.3) 
+// <36=> 36 (P1.4) 
+// <37=> 37 (P1.5) 
+// <38=> 38 (P1.6) 
+// <39=> 39 (P1.7) 
+// <40=> 40 (P1.8) 
+// <41=> 41 (P1.9) 
+// <42=> 42 (P1.10) 
+// <43=> 43 (P1.11) 
+// <44=> 44 (P1.12) 
+// <45=> 45 (P1.13) 
+// <46=> 46 (P1.14) 
+// <47=> 47 (P1.15) 
 // <4294967295=> Not connected 
 
-#ifndef APP_SPIS_CS_PIN
-#define APP_SPIS_CS_PIN 31
+#ifndef SPI_SS_PIN
+#define SPI_SS_PIN 31
 #endif
 
-// <o> APP_SPIS_IRQ_PRIORITY  - Interrupt priority
+// <o> SPI_IRQ_PRIORITY  - Interrupt priority
  
 
 // <i> Priorities 0,2 (nRF51) and 0,1,4,5 (nRF52) are reserved for SoftDevice
@@ -225,8 +289,8 @@
 // <6=> 6 
 // <7=> 7 
 
-#ifndef APP_SPIS_IRQ_PRIORITY
-#define APP_SPIS_IRQ_PRIORITY 6
+#ifndef SPI_IRQ_PRIORITY
+#define SPI_IRQ_PRIORITY 6
 #endif
 
 // </h> 
@@ -266,33 +330,57 @@
 
 // </e>
 
-// <e> NRFX_SPIS_ENABLED - nrfx_spis - SPIS peripheral driver
+// <e> NRFX_SPIM_ENABLED - nrfx_spim - SPIM peripheral driver
 //==========================================================
-#ifndef NRFX_SPIS_ENABLED
-#define NRFX_SPIS_ENABLED 1
+#ifndef NRFX_SPIM_ENABLED
+#define NRFX_SPIM_ENABLED 1
 #endif
-// <q> NRFX_SPIS0_ENABLED  - Enable SPIS0 instance
+// <q> NRFX_SPIM0_ENABLED  - Enable SPIM0 instance
  
 
-#ifndef NRFX_SPIS0_ENABLED
-#define NRFX_SPIS0_ENABLED 0
+#ifndef NRFX_SPIM0_ENABLED
+#define NRFX_SPIM0_ENABLED 1
 #endif
 
-// <q> NRFX_SPIS1_ENABLED  - Enable SPIS1 instance
+// <q> NRFX_SPIM1_ENABLED  - Enable SPIM1 instance
  
 
-#ifndef NRFX_SPIS1_ENABLED
-#define NRFX_SPIS1_ENABLED 1
+#ifndef NRFX_SPIM1_ENABLED
+#define NRFX_SPIM1_ENABLED 0
 #endif
 
-// <q> NRFX_SPIS2_ENABLED  - Enable SPIS2 instance
+// <q> NRFX_SPIM2_ENABLED  - Enable SPIM2 instance
  
 
-#ifndef NRFX_SPIS2_ENABLED
-#define NRFX_SPIS2_ENABLED 0
+#ifndef NRFX_SPIM2_ENABLED
+#define NRFX_SPIM2_ENABLED 0
 #endif
 
-// <o> NRFX_SPIS_DEFAULT_CONFIG_IRQ_PRIORITY  - Interrupt priority
+// <q> NRFX_SPIM3_ENABLED  - Enable SPIM3 instance
+ 
+
+#ifndef NRFX_SPIM3_ENABLED
+#define NRFX_SPIM3_ENABLED 0
+#endif
+
+// <q> NRFX_SPIM_EXTENDED_ENABLED  - Enable extended SPIM features
+ 
+
+#ifndef NRFX_SPIM_EXTENDED_ENABLED
+#define NRFX_SPIM_EXTENDED_ENABLED 0
+#endif
+
+// <o> NRFX_SPIM_MISO_PULL_CFG  - MISO pin pull configuration.
+ 
+// <0=> NRF_GPIO_PIN_NOPULL 
+// <1=> NRF_GPIO_PIN_PULLDOWN 
+// <3=> NRF_GPIO_PIN_PULLUP 
+
+#ifndef NRFX_SPIM_MISO_PULL_CFG
+#define NRFX_SPIM_MISO_PULL_CFG 1
+#endif
+
+// <o> NRFX_SPIM_DEFAULT_CONFIG_IRQ_PRIORITY  - Interrupt priority
  
 // <0=> 0 (highest) 
 // <1=> 1 
@@ -303,30 +391,16 @@
 // <6=> 6 
 // <7=> 7 
 
-#ifndef NRFX_SPIS_DEFAULT_CONFIG_IRQ_PRIORITY
-#define NRFX_SPIS_DEFAULT_CONFIG_IRQ_PRIORITY 6
+#ifndef NRFX_SPIM_DEFAULT_CONFIG_IRQ_PRIORITY
+#define NRFX_SPIM_DEFAULT_CONFIG_IRQ_PRIORITY 6
 #endif
 
-// <o> NRFX_SPIS_DEFAULT_DEF - SPIS default DEF character  <0-255> 
-
-
-#ifndef NRFX_SPIS_DEFAULT_DEF
-#define NRFX_SPIS_DEFAULT_DEF 255
-#endif
-
-// <o> NRFX_SPIS_DEFAULT_ORC - SPIS default ORC character  <0-255> 
-
-
-#ifndef NRFX_SPIS_DEFAULT_ORC
-#define NRFX_SPIS_DEFAULT_ORC 255
-#endif
-
-// <e> NRFX_SPIS_CONFIG_LOG_ENABLED - Enables logging in the module.
+// <e> NRFX_SPIM_CONFIG_LOG_ENABLED - Enables logging in the module.
 //==========================================================
-#ifndef NRFX_SPIS_CONFIG_LOG_ENABLED
-#define NRFX_SPIS_CONFIG_LOG_ENABLED 0
+#ifndef NRFX_SPIM_CONFIG_LOG_ENABLED
+#define NRFX_SPIM_CONFIG_LOG_ENABLED 0
 #endif
-// <o> NRFX_SPIS_CONFIG_LOG_LEVEL  - Default Severity level
+// <o> NRFX_SPIM_CONFIG_LOG_LEVEL  - Default Severity level
  
 // <0=> Off 
 // <1=> Error 
@@ -334,11 +408,11 @@
 // <3=> Info 
 // <4=> Debug 
 
-#ifndef NRFX_SPIS_CONFIG_LOG_LEVEL
-#define NRFX_SPIS_CONFIG_LOG_LEVEL 3
+#ifndef NRFX_SPIM_CONFIG_LOG_LEVEL
+#define NRFX_SPIM_CONFIG_LOG_LEVEL 3
 #endif
 
-// <o> NRFX_SPIS_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+// <o> NRFX_SPIM_CONFIG_INFO_COLOR  - ANSI escape code prefix.
  
 // <0=> Default 
 // <1=> Black 
@@ -350,11 +424,11 @@
 // <7=> Cyan 
 // <8=> White 
 
-#ifndef NRFX_SPIS_CONFIG_INFO_COLOR
-#define NRFX_SPIS_CONFIG_INFO_COLOR 0
+#ifndef NRFX_SPIM_CONFIG_INFO_COLOR
+#define NRFX_SPIM_CONFIG_INFO_COLOR 0
 #endif
 
-// <o> NRFX_SPIS_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+// <o> NRFX_SPIM_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
  
 // <0=> Default 
 // <1=> Black 
@@ -366,8 +440,8 @@
 // <7=> Cyan 
 // <8=> White 
 
-#ifndef NRFX_SPIS_CONFIG_DEBUG_COLOR
-#define NRFX_SPIS_CONFIG_DEBUG_COLOR 0
+#ifndef NRFX_SPIM_CONFIG_DEBUG_COLOR
+#define NRFX_SPIM_CONFIG_DEBUG_COLOR 0
 #endif
 
 // </e>
@@ -466,7 +540,7 @@
 #endif
 // <o> NRFX_GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS - Number of lower power input pins 
 #ifndef NRFX_GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS
-#define NRFX_GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS 1
+#define NRFX_GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS 4
 #endif
 
 // <o> NRFX_GPIOTE_CONFIG_IRQ_PRIORITY  - Interrupt priority
@@ -637,7 +711,7 @@
  
 
 #ifndef NRFX_RTC_DEFAULT_CONFIG_RELIABLE
-#define NRFX_RTC_DEFAULT_CONFIG_RELIABLE 0
+#define NRFX_RTC_DEFAULT_CONFIG_RELIABLE 1
 #endif
 
 // <o> NRFX_RTC_DEFAULT_CONFIG_IRQ_PRIORITY  - Interrupt priority
@@ -1220,7 +1294,7 @@
  
 
 #ifndef NRF_PWR_MGMT_CONFIG_FPU_SUPPORT_ENABLED
-#define NRF_PWR_MGMT_CONFIG_FPU_SUPPORT_ENABLED 1
+#define NRF_PWR_MGMT_CONFIG_FPU_SUPPORT_ENABLED 0
 #endif
 
 // <q> NRF_PWR_MGMT_CONFIG_AUTO_SHUTDOWN_RETRY  - Blocked shutdown procedure will be retried every second.
@@ -1443,7 +1517,7 @@
 // <255=> RTC used 
 
 #ifndef NRF_CLI_LIBUARTE_TIMEOUT_TIMER_INSTANCE
-#define NRF_CLI_LIBUARTE_TIMEOUT_TIMER_INSTANCE 255
+#define NRF_CLI_LIBUARTE_TIMEOUT_TIMER_INSTANCE 3
 #endif
 
 // <o> NRF_CLI_LIBUARTE_TIMEOUT_RTC_INSTANCE  - UARTE timeout RTC instance
@@ -1454,7 +1528,7 @@
 // <255=> TIMER used 
 
 #ifndef NRF_CLI_LIBUARTE_TIMEOUT_RTC_INSTANCE
-#define NRF_CLI_LIBUARTE_TIMEOUT_RTC_INSTANCE 2
+#define NRF_CLI_LIBUARTE_TIMEOUT_RTC_INSTANCE 255
 #endif
 
 // </h> 

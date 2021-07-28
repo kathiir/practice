@@ -7,6 +7,8 @@
 
 #include "boards.h"
 
+#include "spis.h"
+
 static uint8_t m_rx_packet[RADIO_MAX_PAYLOAD_LEN];
 
 
@@ -113,7 +115,7 @@ static void radio_config(nrf_radio_mode_t mode)
 
 void radio_rx(nrf_radio_mode_t mode, uint8_t channel)
 {
-    radio_disable();
+    //radio_disable();
 
     nrf_radio_mode_set(mode);
 
@@ -159,17 +161,12 @@ void RADIO_IRQHandler(void)
 
         bsp_board_led_invert(BSP_BOARD_LED_2);
 
-    }
-
-    if (nrf_radio_event_check(NRF_RADIO_EVENT_CRCERROR))
-    {
-        nrf_radio_event_clear(NRF_RADIO_EVENT_CRCERROR);
-        
-
-        bsp_board_led_invert(BSP_BOARD_LED_1);
+        //send via spi
+        /*
+        spis_set_tx_message(m_rx_packet, RADIO_MAX_PAYLOAD_LEN);
+*/
 
     }
-
 
 
 }
@@ -182,11 +179,12 @@ void radio_init(radio_config_t * p_config){
     if (!m_p_config)
     {
         NVIC_EnableIRQ(RADIO_IRQn);
-        __enable_irq();
+        //__enable_irq();
 
         bsp_board_led_invert(BSP_BOARD_LED_3);
 
         m_p_config = p_config;
+
     }
     else
     {

@@ -76,15 +76,14 @@
       <file file_name="../../../../../components/libraries/pwr_mgmt/nrf_pwr_mgmt.c" />
     </folder>
     <folder Name="nRF_Drivers">
-      <file file_name="../../../../../integration/nrfx/legacy/nrf_drv_spis.c" />
       <file file_name="../../../../../modules/nrfx/soc/nrfx_atomic.c" />
       <file file_name="../../../../../modules/nrfx/drivers/src/nrfx_gpiote.c" />
-      <file file_name="../../../../../modules/nrfx/drivers/src/nrfx_spis.c" />
       <file file_name="../../../../../modules/nrfx/drivers/src/nrfx_rtc.c" />
       <file file_name="../../../../../modules/nrfx/drivers/src/nrfx_timer.c" />
       <file file_name="../../../../../modules/nrfx/drivers/src/nrfx_ppi.c" />
       <file file_name="../../../../../modules/nrfx/drivers/src/nrfx_clock.c" />
       <file file_name="../../../../../integration/nrfx/legacy/nrf_drv_clock.c" />
+      <file file_name="../../../../../modules/nrfx/drivers/src/nrfx_spim.c" />
     </folder>
     <folder Name="Board Support">
       <file file_name="../../../../../components/libraries/bsp/bsp.c" />
@@ -103,8 +102,9 @@
       <file file_name="../config/sdk_config.h" />
       <file file_name="../../../main.c" />
       <file file_name="../../../rcea_cmd.c" />
-      <file file_name="../../../radio.c" />
       <file file_name="../../../rcea.c" />
+      <file file_name="../../../radio.c" />
+      <file file_name="../../../spim.c" />
     </folder>
   </project>
   <configuration
