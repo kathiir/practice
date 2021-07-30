@@ -7,13 +7,15 @@
 
 
 static uint8_t m_tx_packet[RADIO_MAX_PAYLOAD_LEN];
-static uint32_t m_tx_packet_cnt;
 
 
 static const radio_config_t * m_p_config = NULL;
+
+static bool radio_random_message = true;
                                  
 
-
+/**@brief Function for disabling radio and clearing events.
+ */
 static void radio_disable(void)
 {
     nrf_radio_shorts_set(0);
@@ -30,9 +32,12 @@ static void radio_disable(void)
 }
 
 
+//TODO
+/**@brief Function for setting radio channel. Inner.
+ */
 static void radio_channel_set(nrf_radio_mode_t mode, uint8_t channel)
 {
-#if SUPPORT_IEEE802154_250KBIT
+#if EXTENDED_SUPPORT
     if (mode == NRF_RADIO_MODE_IEEE802154_250KBIT)
     {
         if ((channel >= IEEE_MIN_CHANNEL) && (channel <= IEEE_MAX_CHANNEL))
@@ -52,7 +57,8 @@ static void radio_channel_set(nrf_radio_mode_t mode, uint8_t channel)
 }
 
 
-/**@brief Function for configuring the radio.
+//TODO diff modes
+/**@brief Function for configuring the radio packet.
  */
 static void radio_config(nrf_radio_mode_t mode)
 {
@@ -80,7 +86,7 @@ static void radio_config(nrf_radio_mode_t mode)
 
     switch (mode)
     {
-    #if SUPPORT_IEEE802154_250KBIT
+    #if EXTENDED_SUPPORT
         case NRF_RADIO_MODE_IEEE802154_250KBIT:
             /* Packet configuration:
              * S1 size = 0 bits,
@@ -110,12 +116,12 @@ static void radio_config(nrf_radio_mode_t mode)
 }
 
 
-static void generate_packet(nrf_radio_mode_t mode)
+/**@brief Function for generating packet payload.
+ */
+static void generate_packet(nrf_radio_mode_t mode, uint16_t count)
 {
-    radio_config(mode);
 
-
-#if SUPPORT_IEEE802154_250KBIT
+#if EXTENDED_SUPPORT
     if (mode == NRF_RADIO_MODE_IEEE802154_250KBIT)
     {
         m_tx_packet[0] = IEEE_MAX_PAYLOAD_LEN - 1;
@@ -128,15 +134,41 @@ static void generate_packet(nrf_radio_mode_t mode)
     m_tx_packet[0] = sizeof(m_tx_packet) - 1;
 #endif
 
-    for (uint8_t i = 0; i < sizeof(m_tx_packet) - 1; i++)
-    {
-        m_tx_packet[i + 1] = 0xAF;
+    memcpy(m_tx_packet + 1, &count, sizeof(count));
+
+    if (radio_random_message) {
+        for (uint8_t i = 3; i < sizeof(m_tx_packet); i++)
+        {
+            m_tx_packet[i] = 0xAF; //TODO random
+        }
     }
 
     nrf_radio_packetptr_set(m_tx_packet);
 }
 
 
+//TODO check size, include crc and lenght with packet number
+bool radio_set_message(uint8_t * message, size_t size) {
+
+    if (size >= RADIO_MAX_PAYLOAD_LEN - 2) {
+        return false;
+    }
+
+    radio_random_message = false;
+
+    memcpy(m_tx_packet + 3, message, size);
+
+    return true;
+}
+
+
+void radio_generate_random_message() {
+    radio_random_message = true;
+}
+
+
+/**@brief Function for setting radio mode.
+ */
 void radio_config_mode(nrf_radio_mode_t mode) {
 
     radio_disable();
@@ -146,6 +178,9 @@ void radio_config_mode(nrf_radio_mode_t mode) {
     nrf_radio_mode_set(mode);
 }
 
+
+/**@brief Function for setting radio channel.
+ */
 void radio_config_channel(uint8_t channel) {
     radio_disable();
 
@@ -153,13 +188,20 @@ void radio_config_channel(uint8_t channel) {
 
 }
 
+
+/**@brief Function for setting radio output power.
+ */
 void radio_config_tx_power(nrf_radio_txpower_t txpower) {
+
     radio_disable();
+
     nrf_radio_txpower_set(txpower);
 }
 
 
 // TODO
+/**@brief Function for sending radio packet.
+ *//*
 void send_packet(nrf_radio_mode_t mode,
                  nrf_radio_txpower_t txpower,
                  uint8_t channel)
@@ -169,7 +211,7 @@ void send_packet(nrf_radio_mode_t mode,
 
     switch (mode)
     {
-#if SUPPORT_IEEE802154_250KBIT
+#if EXTENDED_SUPPORT
         case NRF_RADIO_MODE_IEEE802154_250KBIT:
             nrf_radio_shorts_enable(NRF_RADIO_SHORT_READY_START_MASK |
                                     NRF_RADIO_SHORT_PHYEND_START_MASK);
@@ -198,15 +240,15 @@ void send_packet(nrf_radio_mode_t mode,
 
     while (!nrf_radio_event_check(NRF_RADIO_EVENT_END))
     {
-        /* wait */
+        // wait 
     }
 
 }
+*/
 
-/*
-void send_packet()
+void radio_send_packet(uint16_t count)
 {
-    generate_packet(m_p_config->mode);
+    generate_packet(m_p_config->mode, count);
 
     switch (m_p_config->mode)
     {
@@ -233,30 +275,34 @@ void send_packet()
 
     while (!nrf_radio_event_check(NRF_RADIO_EVENT_END))
     {
-        /* wait */ /*
+        /* wait */ 
     }
 
 }
-*/
 
+
+
+//TODO
+/**@brief Interrupt handler.
+ */
 void RADIO_IRQHandler(void)
 {
     if (nrf_radio_event_check(NRF_RADIO_EVENT_END))
     {
         nrf_radio_event_clear(NRF_RADIO_EVENT_END);
 
-        
 
         NRF_LOG_RAW_INFO("Delivered.\n");
 
-        
-        //check num of packets
+        //TODO
         radio_disable();
         
     }
 }
 
 
+/**@brief Function for initializing radio module.
+ */
 void radio_init(radio_config_t * p_config)
 {
     if (!m_p_config)

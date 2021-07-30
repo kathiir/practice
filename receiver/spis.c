@@ -16,7 +16,7 @@ static spi_payload_t spi_payload;
 static const nrfx_spis_t spis = NRFX_SPIS_INSTANCE(SPIS_INSTANCE); /**< SPIS instance. */
 
 
-static uint8_t       m_tx_buf[RADIO_MAX_PAYLOAD_LEN-1];           /**< TX buffer. */
+static uint8_t       m_tx_buf[RADIO_MAX_PAYLOAD_LEN];           /**< TX buffer. */
 static uint8_t       m_rx_buf[sizeof(spi_payload)];    /**< RX buffer. */
 static const size_t m_tx_length = sizeof(m_tx_buf);  
 static const size_t m_rx_length = sizeof(m_rx_buf);
@@ -50,6 +50,8 @@ static void spis_event_handler(const nrfx_spis_evt_t * event,
             spis_config_received = true;
 
             bsp_board_led_invert(BSP_BOARD_LED_0);
+
+            NRF_LOG_INFO(" Transfer completed. Config Received: %s",(uint32_t)m_rx_buf);
 
         }
 
@@ -109,7 +111,7 @@ void spis_receive_config() {
     uint32_t err_code;
 
     err_code = nrfx_spis_buffers_set(&spis, m_tx_buf, m_tx_length, m_rx_buf, m_rx_length);
-
+/*
     NRF_LOG_INFO(" Error code: %d", (uint32_t) err_code);
 
     for (int i = 0; i < err_code; i++) {
@@ -120,7 +122,7 @@ void spis_receive_config() {
     }
 
     nrf_delay_ms(500);
-
+*/
     APP_ERROR_CHECK(err_code);
 
 }

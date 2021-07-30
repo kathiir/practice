@@ -28,7 +28,7 @@ extern "C" {
 #define RADIO_LENGTH_LENGTH_FIELD (8UL) /**< Length on air of the LENGTH field. */
 
 
-#define RADIO_MAX_PAYLOAD_LEN     256   /**< Maximum radio RX or TX payload. */
+#define RADIO_MAX_PAYLOAD_LEN     255   /**< Maximum radio RX or TX payload. */
 #define IEEE_MAX_PAYLOAD_LEN      127   /**< IEEE 802.15.4 maximum payload length. */
 #define IEEE_MIN_CHANNEL          11    /**< IEEE 802.15.4 minimum channel. */
 #define IEEE_MAX_CHANNEL          26    /**< IEEE 802.15.4 maximum channel. */

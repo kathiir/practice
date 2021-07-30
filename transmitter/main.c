@@ -29,9 +29,6 @@ NRF_CLI_DEF(m_cli_libuarte,
             CLI_LOG_QUEUE_SIZE);
 
 
-
-
-
 /**@brief Function for starting a CLI
  */
 static void cli_start(void)
@@ -43,7 +40,6 @@ static void cli_start(void)
 }
 
 
-// TODO libuarte or just uart
 /**@brief Function for configuring libuarte for CLI.
  */
 static void cli_init(void)
@@ -62,6 +58,8 @@ static void cli_init(void)
 }
 
 
+/**@brief Cli process.
+ */
 static void cli_process(void)
 {
     nrf_cli_process(&m_cli_libuarte);
@@ -75,12 +73,9 @@ static void log_init(void)
     ret_code_t err_code = NRF_LOG_INIT(app_timer_cnt_get);
 
     APP_ERROR_CHECK(err_code);
-
-    //NRF_LOG_DEFAULT_BACKENDS_INIT(); //??
 }
 
 
-// TODO is nrf drv legacy? or maybe init as NRF_CLOCK what is difference
 /**@brief Function for initializing oscillators.
  */
 static void clock_init(void)
@@ -96,11 +91,9 @@ static void clock_init(void)
 }
 
 
-//TODO sdk_config - legacy support or maybe change some vars - read more
-//TODO also pca10040 does not support ieee_802154_250 and ieee at all
-//TODO idk what to do about that
-//TODO make with support for different modes of radio and ieee only if supported? 
-//TODO but what to do on receiver. how to check mode - read more
+//WARNING pca10040 does not support ieee_802154_250 and ieee at all
+/**@brief Function for initializing oscillators.
+ */
 int main(void)
 {
     uint32_t err_code;
@@ -114,10 +107,6 @@ int main(void)
     err_code = app_timer_init();
     
     APP_ERROR_CHECK(err_code);
-
-    //spis_init();
-
-
 
     rcea_cmd_init();
 

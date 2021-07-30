@@ -9,10 +9,10 @@ extern "C" {
 #endif
 
 /** Indicates devices that support 802.15.4 radio mode. */
-#if defined(NRF52840_XXAA) || defined(NRF52833_XXAA)// || defined(NRF52832_XXAA)
-    #define SUPPORT_IEEE802154_250KBIT 1
+#if defined(NRF52840_XXAA) || defined(NRF52833_XXAA)
+    #define EXTENDED_SUPPORT 1
 #else
-    #define SUPPORT_IEEE802154_250KBIT 0
+    #define EXTENDED_SUPPORT 0
 #endif
 
 
@@ -26,7 +26,7 @@ extern "C" {
 #define RADIO_LENGTH_LENGTH_FIELD (8UL) /**< Length on air of the LENGTH field. */
 
 
-#define RADIO_MAX_PAYLOAD_LEN     256   /**< Maximum radio RX or TX payload. */
+#define RADIO_MAX_PAYLOAD_LEN     255   /**< Maximum radio RX or TX payload. */
 #define IEEE_MAX_PAYLOAD_LEN      127   /**< IEEE 802.15.4 maximum payload length. */
 #define IEEE_MIN_CHANNEL          11    /**< IEEE 802.15.4 minimum channel. */
 #define IEEE_MAX_CHANNEL          26    /**< IEEE 802.15.4 maximum channel. */
@@ -41,18 +41,39 @@ typedef struct {
 
 } radio_config_t;
 
+
+/**@brief Function for initializing radio module.
+ */
 void radio_init(radio_config_t * p_config);
 
+
+//TODO
+/**@brief Function for sending radio packet.
+ */
 void send_packet(nrf_radio_mode_t mode,
                  nrf_radio_txpower_t txpower,
                  uint8_t channel);
-/*
-void send_packet();
-*/
+
+void radio_send_packet(uint16_t count);
+
+
+bool radio_set_message(uint8_t * message, size_t size);
+
+void radio_generate_random_message();
+
+
+/**@brief Function for setting radio mode.
+ */
 void radio_config_mode(nrf_radio_mode_t mode);
 
+
+/**@brief Function for setting radio channel.
+ */
 void radio_config_channel(uint8_t channel);
 
+
+/**@brief Function for setting radio output power.
+ */
 void radio_config_tx_power(nrf_radio_txpower_t txpower);
 
 

@@ -325,7 +325,7 @@
 // <e> NRFX_SPIS_CONFIG_LOG_ENABLED - Enables logging in the module.
 //==========================================================
 #ifndef NRFX_SPIS_CONFIG_LOG_ENABLED
-#define NRFX_SPIS_CONFIG_LOG_ENABLED 0
+#define NRFX_SPIS_CONFIG_LOG_ENABLED 1
 #endif
 // <o> NRFX_SPIS_CONFIG_LOG_LEVEL  - Default Severity level
  
@@ -899,7 +899,7 @@
 // <e> NRFX_TIMER_CONFIG_LOG_ENABLED - Enables logging in the module.
 //==========================================================
 #ifndef NRFX_TIMER_CONFIG_LOG_ENABLED
-#define NRFX_TIMER_CONFIG_LOG_ENABLED 0
+#define NRFX_TIMER_CONFIG_LOG_ENABLED 1
 #endif
 // <o> NRFX_TIMER_CONFIG_LOG_LEVEL  - Default Severity level
  
@@ -1020,7 +1020,7 @@
 // <e> NRFX_UARTE_CONFIG_LOG_ENABLED - Enables logging in the module.
 //==========================================================
 #ifndef NRFX_UARTE_CONFIG_LOG_ENABLED
-#define NRFX_UARTE_CONFIG_LOG_ENABLED 0
+#define NRFX_UARTE_CONFIG_LOG_ENABLED 1
 #endif
 // <o> NRFX_UARTE_CONFIG_LOG_LEVEL  - Default Severity level
  
@@ -1141,7 +1141,7 @@
 // <e> NRFX_UART_CONFIG_LOG_ENABLED - Enables logging in the module.
 //==========================================================
 #ifndef NRFX_UART_CONFIG_LOG_ENABLED
-#define NRFX_UART_CONFIG_LOG_ENABLED 0
+#define NRFX_UART_CONFIG_LOG_ENABLED 1
 #endif
 // <o> NRFX_UART_CONFIG_LOG_LEVEL  - Default Severity level
  
