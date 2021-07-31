@@ -28,7 +28,7 @@ extern "C" {
 #define RADIO_LENGTH_LENGTH_FIELD (8UL) /**< Length on air of the LENGTH field. */
 
 
-#define RADIO_MAX_PAYLOAD_LEN     255   /**< Maximum radio RX or TX payload. */
+#define RADIO_MAX_PAYLOAD_LEN     249   /**< Maximum radio RX or TX payload. Had to decrease due to SPI limitations */
 #define IEEE_MAX_PAYLOAD_LEN      127   /**< IEEE 802.15.4 maximum payload length. */
 #define IEEE_MIN_CHANNEL          11    /**< IEEE 802.15.4 minimum channel. */
 #define IEEE_MAX_CHANNEL          26    /**< IEEE 802.15.4 maximum channel. */
@@ -44,7 +44,9 @@ typedef struct {
 
 void radio_rx(nrf_radio_mode_t mode, uint8_t channel);
 
-void radio_init(radio_config_t * p_config);
+void radio_init(radio_config_t * p_config, uint8_t * p_rx_packet);
+
+bool radio_check_packet_received(void);
 
 
 #ifdef __cplusplus

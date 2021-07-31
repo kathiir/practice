@@ -19,6 +19,9 @@ static radio_config_t m_config;
 
 static volatile uint16_t count = 0;
 
+static uint8_t m_tx_packet[RADIO_MAX_PAYLOAD_LEN];
+static uint8_t m_rx_packet[RADIO_MAX_PAYLOAD_LEN]; 
+
 
 
 //TODO
@@ -61,7 +64,7 @@ void rcea_set_mode(nrf_radio_mode_t mode) {
 
     radio_config_mode(mode);
 
-    spim_transfer_mode(mode, count);
+//    spim_transfer_mode(mode, count);
 }
 
 
@@ -82,7 +85,7 @@ void rcea_set_channel(uint8_t channel) {
 
     radio_config_channel(channel);
 
-    spim_transfer_channel(channel, count);
+//    spim_transfer_channel(channel, count);
 }
 
 
@@ -91,6 +94,11 @@ void rcea_set_channel(uint8_t channel) {
 void rcea_init(void) {
 
     spim_init();
+
+    m_config.channel = 11;
+    m_config.mode = NRF_RADIO_MODE_NRF_250KBIT;
+    m_config.txpower = NRF_RADIO_TXPOWER_0DBM;
+
     radio_init(&m_config);
 }
 

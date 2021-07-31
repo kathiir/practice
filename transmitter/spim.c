@@ -7,6 +7,8 @@
 #include "nrf.h"
 #include "nrf_log.h"
 
+#include "crc16.h"
+
 #define SPIM_INSTANCE 0
 static const nrfx_spim_t spim = NRFX_SPIM_INSTANCE(SPIM_INSTANCE);
 
@@ -17,9 +19,10 @@ static spi_payload_t spi_payload;
 //3 + size + crc16?
 
 #define TX_SIZE 3 + sizeof(spi_payload) + 2
+#define RX_SIZE 255
 
-static uint8_t       m_tx_buf[TX_SIZE];          
-static uint8_t       m_rx_buf[TX_SIZE];   
+static uint8_t       m_tx_buf[TX_SIZE];
+static uint8_t       m_rx_buf[RX_SIZE];   
 static const size_t m_tx_length = sizeof(m_tx_buf);  
 static const size_t m_rx_length = sizeof(m_rx_buf);  
 
@@ -83,17 +86,20 @@ void spim_init(void)
 }
 
 
-static void set_tx_message(uint16_t num, spi_payload_t * payload) {
+static void spim_set_tx_message(uint16_t num, spi_payload_t * payload) {
+    
+    
     memcpy(m_tx_buf, &num, sizeof(num));
-
     uint8_t size = sizeof(payload);
     memcpy(m_tx_buf + sizeof(num), &size, 1);
     memcpy(m_tx_buf + sizeof(num) + 1, payload, sizeof(payload));
 
-    //TODO crc
+    uint16_t crc = crc16_compute(m_tx_buf, TX_SIZE-2, NULL);
+    memcpy(m_tx_buf + sizeof(num) + 1 + sizeof(payload), &crc, sizeof(crc));
+
 }
 
-static uint16_t get_rx_number() {
+static uint16_t spim_get_rx_number() {
     uint8_t num;
 
     memcpy(&num, m_rx_buf, sizeof(num));
@@ -101,7 +107,7 @@ static uint16_t get_rx_number() {
     return num;
 }
 
-static uint8_t get_rx_length() {
+static uint8_t spim_get_rx_length() {
     uint8_t length;
 
     memcpy(&length, m_rx_buf + 2, sizeof(length));
@@ -109,12 +115,13 @@ static uint8_t get_rx_length() {
     return length;
 }
 
-static spi_payload_t get_rx_payload() {
-    spi_payload_t payload;
 
-    memcpy(&payload, m_rx_buf + 3, sizeof(payload));
+static spi_message_t spim_get_rx_payload_type() {
+    spi_message_t payload_type;
 
-    return payload;
+    memcpy(&payload_type, m_rx_buf + 3, sizeof(payload_type));
+
+    return payload_type;
 }
 
 
@@ -125,53 +132,46 @@ static bool spim_receive_ack(uint16_t num) {
 
     spi_payload.type = WAIT_ACK;
 
-    set_tx_message(num, &spi_payload);
+    spim_set_tx_message(num, &spi_payload);
 
 
-    while (!ack_received) {
+    //while (!ack_received) {
 
-    for (int i = 0; i < 10 && !ack_received; i++)
+        for (int i = 0; i < 10 && !ack_received; i++) {
     
-        spi_xfer_done = false;
+            spi_xfer_done = false;
 
-        APP_ERROR_CHECK(nrfx_spim_xfer(&spim, &xfer_data, 0));
+            APP_ERROR_CHECK(nrfx_spim_xfer(&spim, &xfer_data, 0));
         
-        while (!spi_xfer_done)
-        {
-            __WFE();
-        }
-
-        if (message_received) {
-            
-            if (get_rx_number() != num) {
-                continue;
+            while (!spi_xfer_done)
+            {
+                __WFE();
             }
 
-            spi_payload_t payload = get_rx_payload();
+            if (message_received) {
             
-            if (payload.type == ACKNOWLEDGE) {
-                if (payload.params.success) {
-                    return true;
-                } else {
-                    return false;
+                if (spim_get_rx_number() != num) {
+                    continue;
+                }
+
+                spi_message_t payload_type = spim_get_rx_payload_type();
+            
+                if (payload_type == ACKNOWLEDGE) {
+                        return true;
                 }
             }
+
+            //TODO delay
+
         }
 
-        //TODO delay
-    }
+        
+    //}
 
     return false;
 }
 
 
-//TODO
-/**@brief Function for transferring payload via SPI.
- */
-void spim_transfer(spi_payload_t payload) {
-    memset(m_rx_buf, 0, m_rx_length);
-
-}
 
 
 /**@brief Function for transferring channel via SPI.
@@ -181,9 +181,8 @@ bool spim_transfer_channel(uint8_t channel, uint16_t count) {
     spi_payload.type = CONFIG_CHANNEL;
     spi_payload.params.channel = channel;
 
-    //memcpy(m_tx_buf, &spi_payload, sizeof(spi_payload));
 
-    set_tx_message(count, &spi_payload);
+    spim_set_tx_message(count, &spi_payload);
 
     spi_xfer_done = false;
     message_received = false;
@@ -200,8 +199,6 @@ bool spim_transfer_channel(uint8_t channel, uint16_t count) {
     //TODO delay?
 
     return spim_receive_ack(count);
-
-
 }
 
 
@@ -212,9 +209,8 @@ bool spim_transfer_mode(nrf_radio_mode_t mode, uint16_t count) {
     spi_payload.type = CONFIG_MODE;
     spi_payload.params.mode = mode;
 
-    //memcpy(m_tx_buf, &spi_payload, sizeof(spi_payload));
 
-    set_tx_message(count, &spi_payload);
+    spim_set_tx_message(count, &spi_payload);
 
     spi_xfer_done = false;
     message_received = false;
@@ -233,15 +229,18 @@ bool spim_transfer_mode(nrf_radio_mode_t mode, uint16_t count) {
 }
 
 
+//TODO
 /**@brief Function for transferring radio packet from receiver via SPI.
  */
-bool spim_receive_packet(uint8_t * p_packet, size_t length) {
+bool spim_receive_packet(uint8_t * p_packet, size_t length, uint16_t count) {
     
-    uint8_t packet[RADIO_MAX_PAYLOAD_LEN];
 
     message_received = false;
 
     memset(m_rx_buf, 0, m_rx_length);
+
+
+    
 
 
     APP_ERROR_CHECK(nrfx_spim_xfer(&spim, &xfer_data, 0));
@@ -250,6 +249,8 @@ bool spim_receive_packet(uint8_t * p_packet, size_t length) {
     while(!message_received) {
         __WFE();
     }
+
+    memcpy(p_packet, xfer_data.p_rx_buffer + 3, length);
 
 }
 

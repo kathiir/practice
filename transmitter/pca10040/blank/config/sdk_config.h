@@ -1092,6 +1092,13 @@
 
 // </e>
 
+// <q> CRC16_ENABLED  - CRC16 - Enable crc16 computing
+ 
+
+#ifndef CRC16_ENABLED
+#define CRC16_ENABLED 1
+#endif
+
 // <q> HARDFAULT_HANDLER_ENABLED  - hardfault_default - HardFault default handler for debugging and release
  
 

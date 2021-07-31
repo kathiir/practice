@@ -5,6 +5,9 @@
 #include "nrf_log.h"
 
 
+#include "nrf_rng.h"
+
+
 
 static uint8_t m_tx_packet[RADIO_MAX_PAYLOAD_LEN];
 
@@ -12,6 +15,21 @@ static uint8_t m_tx_packet[RADIO_MAX_PAYLOAD_LEN];
 static const radio_config_t * m_p_config = NULL;
 
 static bool radio_random_message = true;
+
+
+/**@brief Function for generating an 8-bit random number with the internal random generator.
+ */
+static uint8_t rnd8(void)
+{
+    nrf_rng_event_clear(NRF_RNG_EVENT_VALRDY);
+
+    while (!nrf_rng_event_get(NRF_RNG_EVENT_VALRDY))
+    {
+        /* Do nothing. */
+    }
+
+    return nrf_rng_random_value_get();
+}
                                  
 
 /**@brief Function for disabling radio and clearing events.
@@ -32,7 +50,6 @@ static void radio_disable(void)
 }
 
 
-//TODO
 /**@brief Function for setting radio channel. Inner.
  */
 static void radio_channel_set(nrf_radio_mode_t mode, uint8_t channel)
@@ -65,7 +82,7 @@ static void radio_config(nrf_radio_mode_t mode)
     nrf_radio_packet_conf_t packet_conf;
 
     nrf_radio_modecnf0_set(false, RADIO_MODECNF0_DTX_Center);
-    nrf_radio_crc_configure(RADIO_CRCCNF_LEN_Disabled, NRF_RADIO_CRC_ADDR_INCLUDE, 0);
+    nrf_radio_crc_configure(RADIO_CRCCNF_LEN_Two, NRF_RADIO_CRC_ADDR_SKIP, 0x1021);
 
 
     nrf_radio_txaddress_set(0);
@@ -77,7 +94,7 @@ static void radio_config(nrf_radio_mode_t mode)
 
     memset(&packet_conf, 0, sizeof(packet_conf));
     packet_conf.lflen = RADIO_LENGTH_LENGTH_FIELD;
-    packet_conf.maxlen = (sizeof(m_tx_packet) - 1);
+    packet_conf.maxlen = RADIO_MAX_PAYLOAD_LEN - 1;
     packet_conf.statlen = 0;
     packet_conf.balen = 4;
     packet_conf.big_endian = true;
@@ -128,18 +145,18 @@ static void generate_packet(nrf_radio_mode_t mode, uint16_t count)
     }
     else
     {
-        m_tx_packet[0] = sizeof(m_tx_packet) - 1;
+        m_tx_packet[0] = RADIO_MAX_PAYLOAD_LEN - 1;
     }
 #else
-    m_tx_packet[0] = sizeof(m_tx_packet) - 1;
+    m_tx_packet[0] = RADIO_MAX_PAYLOAD_LEN - 1;
 #endif
 
     memcpy(m_tx_packet + 1, &count, sizeof(count));
 
     if (radio_random_message) {
-        for (uint8_t i = 3; i < sizeof(m_tx_packet); i++)
+        for (uint8_t i = 3; i < RADIO_MAX_PAYLOAD_LEN; i++)
         {
-            m_tx_packet[i] = 0xAF; //TODO random
+            m_tx_packet[i] = rnd8();
         }
     }
 
@@ -150,7 +167,7 @@ static void generate_packet(nrf_radio_mode_t mode, uint16_t count)
 //TODO check size, include crc and lenght with packet number
 bool radio_set_message(uint8_t * message, size_t size) {
 
-    if (size >= RADIO_MAX_PAYLOAD_LEN - 2) {
+    if (size >= RADIO_MAX_PAYLOAD_LEN - 3) {
         return false;
     }
 
@@ -303,15 +320,23 @@ void RADIO_IRQHandler(void)
 
 /**@brief Function for initializing radio module.
  */
-void radio_init(radio_config_t * p_config)
+void radio_init(radio_config_t * p_config, uint8_t * p_tx_packet)
 {
     if (!m_p_config)
     {
 
+        nrf_rng_task_trigger(NRF_RNG_TASK_START);
+
         NVIC_EnableIRQ(RADIO_IRQn);
-        //__enable_irq();
 
         m_p_config = p_config;
+        
+        radio_config_mode(m_p_config->mode);
+        radio_config_channel(m_p_config->channel);
+        radio_config_tx_power(m_p_config->txpower);
+
+        m_p_tx_packet = p_tx_packet;
+
     }
     else
     {

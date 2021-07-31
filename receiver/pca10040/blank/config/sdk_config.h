@@ -1471,6 +1471,14 @@
 
 // </e>
 
+
+// <q> CRC16_ENABLED  - CRC16 - Enable crc16 computing
+
+#ifndef CRC16_ENABLED
+#define CRC16_ENABLED 1
+#endif
+
+
 // <e> NRF_BALLOC_ENABLED - nrf_balloc - Block allocator module
 //==========================================================
 #ifndef NRF_BALLOC_ENABLED

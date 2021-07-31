@@ -26,7 +26,7 @@ extern "C" {
 #define RADIO_LENGTH_LENGTH_FIELD (8UL) /**< Length on air of the LENGTH field. */
 
 
-#define RADIO_MAX_PAYLOAD_LEN     255   /**< Maximum radio RX or TX payload. */
+#define RADIO_MAX_PAYLOAD_LEN     249   /**< Maximum radio RX or TX payload. Had to decrease due to SPI limitations */
 #define IEEE_MAX_PAYLOAD_LEN      127   /**< IEEE 802.15.4 maximum payload length. */
 #define IEEE_MIN_CHANNEL          11    /**< IEEE 802.15.4 minimum channel. */
 #define IEEE_MAX_CHANNEL          26    /**< IEEE 802.15.4 maximum channel. */
@@ -49,11 +49,11 @@ void radio_init(radio_config_t * p_config);
 
 //TODO
 /**@brief Function for sending radio packet.
- */
+ *//*
 void send_packet(nrf_radio_mode_t mode,
                  nrf_radio_txpower_t txpower,
                  uint8_t channel);
-
+*/
 void radio_send_packet(uint16_t count);
 
 

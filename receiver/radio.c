@@ -9,10 +9,12 @@
 
 #include "spis.h"
 
-static uint8_t m_rx_packet[RADIO_MAX_PAYLOAD_LEN];
+static uint8_t * m_p_rx_packet = NULL;
 
 
 static const radio_config_t * m_p_config = NULL;
+
+static volatile bool packet_received = false;
 
 
 static void radio_disable(void)
@@ -74,7 +76,7 @@ static void radio_config(nrf_radio_mode_t mode)
 
     memset(&packet_conf, 0, sizeof(packet_conf));
     packet_conf.lflen = RADIO_LENGTH_LENGTH_FIELD;
-    packet_conf.maxlen = (sizeof(m_rx_packet) - 1);
+    packet_conf.maxlen = RADIO_MAX_PAYLOAD_LEN - 1;
     packet_conf.statlen = 0;
     packet_conf.balen = 4;
     packet_conf.big_endian = true;
@@ -115,14 +117,14 @@ static void radio_config(nrf_radio_mode_t mode)
 
 void radio_rx(nrf_radio_mode_t mode, uint8_t channel)
 {
-    //radio_disable();
+    radio_disable();
 
     nrf_radio_mode_set(mode);
 
     nrf_radio_shorts_enable(NRF_RADIO_SHORT_READY_START_MASK |
                             NRF_RADIO_SHORT_END_START_MASK);
 
-    nrf_radio_packetptr_set(m_rx_packet);
+    nrf_radio_packetptr_set(m_p_rx_packet);
 
     radio_config(mode);
     radio_channel_set(mode, channel);
@@ -131,18 +133,13 @@ void radio_rx(nrf_radio_mode_t mode, uint8_t channel)
 
     nrf_radio_int_enable(NRF_RADIO_INT_CRCERROR_MASK);
 
-
-    
-
     nrf_radio_task_trigger(NRF_RADIO_TASK_RXEN);
 
+}
 
 
-    //bsp_board_led_invert(BSP_BOARD_LED_3);
-
-
-    /* TODO busy loop on receive and init*/
-
+bool radio_check_packet_received(void) {
+    return packet_received;
 }
 
 
@@ -152,38 +149,32 @@ void RADIO_IRQHandler(void)
 
     bsp_board_led_invert(BSP_BOARD_LED_3);
 
-    //what if not received at all. timeout?
 
     if (nrf_radio_event_check(NRF_RADIO_EVENT_CRCOK))
     {
         nrf_radio_event_clear(NRF_RADIO_EVENT_CRCOK);
        
-
         bsp_board_led_invert(BSP_BOARD_LED_2);
-
-        //send via spi
-        /*
-        spis_set_tx_message(m_rx_packet, RADIO_MAX_PAYLOAD_LEN);
-*/
-
+        packet_received = true;
     }
 
 
 }
 
 
-void radio_init(radio_config_t * p_config){
+void radio_init(radio_config_t * p_config, uint8_t * p_rx_packet){
 
     bsp_board_led_invert(BSP_BOARD_LED_1);
 
     if (!m_p_config)
     {
         NVIC_EnableIRQ(RADIO_IRQn);
-        //__enable_irq();
 
         bsp_board_led_invert(BSP_BOARD_LED_3);
 
         m_p_config = p_config;
+
+        m_p_rx_packet = p_rx_packet;
 
     }
     else
