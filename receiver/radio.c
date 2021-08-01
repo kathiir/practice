@@ -12,7 +12,7 @@
 static uint8_t * m_p_rx_packet = NULL;
 
 
-static const radio_config_t * m_p_config = NULL;
+static radio_config_t * m_p_config = NULL;
 
 static volatile bool packet_received = false;
 
@@ -64,7 +64,7 @@ static void radio_config(nrf_radio_mode_t mode)
     nrf_radio_packet_conf_t packet_conf;
 
     nrf_radio_modecnf0_set(false, RADIO_MODECNF0_DTX_Center);
-    nrf_radio_crc_configure(RADIO_CRCCNF_LEN_Disabled, NRF_RADIO_CRC_ADDR_INCLUDE, 0);
+    nrf_radio_crc_configure(RADIO_CRCCNF_LEN_Two, NRF_RADIO_CRC_ADDR_SKIP, 0x1021);
 
     nrf_radio_txaddress_set(0);
     nrf_radio_rxaddresses_set(1);
@@ -115,6 +115,12 @@ static void radio_config(nrf_radio_mode_t mode)
 }
 
 
+void receive_packet() {
+    packet_received = false;
+
+}
+
+
 void radio_rx(nrf_radio_mode_t mode, uint8_t channel)
 {
     radio_disable();
@@ -148,13 +154,21 @@ void RADIO_IRQHandler(void)
 
 
     bsp_board_led_invert(BSP_BOARD_LED_3);
-
+    packet_received = false;
 
     if (nrf_radio_event_check(NRF_RADIO_EVENT_CRCOK))
     {
         nrf_radio_event_clear(NRF_RADIO_EVENT_CRCOK);
        
         bsp_board_led_invert(BSP_BOARD_LED_2);
+        packet_received = true;
+    }
+
+    if (nrf_radio_event_check(NRF_RADIO_EVENT_CRCERROR))
+    {
+        nrf_radio_event_clear(NRF_RADIO_EVENT_CRCERROR);
+       
+        bsp_board_led_invert(BSP_BOARD_LED_1);
         packet_received = true;
     }
 
@@ -175,6 +189,9 @@ void radio_init(radio_config_t * p_config, uint8_t * p_rx_packet){
         m_p_config = p_config;
 
         m_p_rx_packet = p_rx_packet;
+
+        m_p_config->mode = NRF_RADIO_MODE_NRF_250KBIT;
+        m_p_config->channel = 11;
 
     }
     else

@@ -9,7 +9,7 @@
 
 
 
-static uint8_t m_tx_packet[RADIO_MAX_PAYLOAD_LEN];
+static uint8_t * m_p_tx_packet;
 
 
 static const radio_config_t * m_p_config = NULL;
@@ -141,26 +141,27 @@ static void generate_packet(nrf_radio_mode_t mode, uint16_t count)
 #if EXTENDED_SUPPORT
     if (mode == NRF_RADIO_MODE_IEEE802154_250KBIT)
     {
-        m_tx_packet[0] = IEEE_MAX_PAYLOAD_LEN - 1;
+        m_p_tx_packet[0] = IEEE_MAX_PAYLOAD_LEN - 1;
     }
     else
     {
-        m_tx_packet[0] = RADIO_MAX_PAYLOAD_LEN - 1;
+        m_p_tx_packet[0] = RADIO_MAX_PAYLOAD_LEN - 1;
     }
 #else
-    m_tx_packet[0] = RADIO_MAX_PAYLOAD_LEN - 1;
+    m_p_tx_packet[0] = RADIO_MAX_PAYLOAD_LEN - 1;
 #endif
 
-    memcpy(m_tx_packet + 1, &count, sizeof(count));
+    memcpy(m_p_tx_packet + 1, &count, sizeof(count));
 
     if (radio_random_message) {
         for (uint8_t i = 3; i < RADIO_MAX_PAYLOAD_LEN; i++)
         {
-            m_tx_packet[i] = rnd8();
+            //m_p_tx_packet[i] = rnd8();
+            m_p_tx_packet[i] = 0xAA;
         }
     }
 
-    nrf_radio_packetptr_set(m_tx_packet);
+    nrf_radio_packetptr_set(m_p_tx_packet);
 }
 
 
@@ -173,7 +174,7 @@ bool radio_set_message(uint8_t * message, size_t size) {
 
     radio_random_message = false;
 
-    memcpy(m_tx_packet + 3, message, size);
+    memcpy(m_p_tx_packet + 3, message, size);
 
     return true;
 }

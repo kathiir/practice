@@ -28,7 +28,7 @@ void rcea_receiver_init() {
 
 void rcea_process() {
 
-    radio_rx(NRF_RADIO_MODE_NRF_250KBIT, 11);
+    radio_rx(m_config.mode, m_config.channel);
 
     while(true) {
         
@@ -39,19 +39,36 @@ void rcea_process() {
 
 
         while(!spis_check_config_received()) {
+            receive_packet();
+
             __WFE();
 
             if (radio_check_packet_received()) {
-                spis_set_tx_message(m_rx_packet, RADIO_MAX_PAYLOAD_LEN)
+                        bsp_board_led_invert(BSP_BOARD_LED_0);
+
+                spis_set_tx_message(m_rx_packet, RADIO_MAX_PAYLOAD_LEN);
             }
         }
         
-        //config radio aka set values for m_config and send to radio_rx
-        spis_get_payload();
+        spi_payload_t payload = spis_get_payload();
 
+        if (payload.type == CONFIG_MODE) {
+            m_config.mode = payload.params.mode;
+        } else if (payload.type == CONFIG_CHANNEL) {
+            m_config.channel = payload.params.channel;
+        }
+
+        uint16_t count = spis_get_rx_number();
         bsp_board_led_invert(BSP_BOARD_LED_1);
+        spis_send_ack(count);
+        
 
-        radio_rx(NRF_RADIO_MODE_NRF_250KBIT, 11);
+        radio_rx(m_config.mode, m_config.channel);
+
+        
+
+
+        
 
     }
 }

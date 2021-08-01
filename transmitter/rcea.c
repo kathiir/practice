@@ -35,9 +35,10 @@ void rcea_send_packet(void) {
 */
     radio_send_packet(count);
 
-/*
-    spim_receive_packet();
-*/
+
+    //spim_receive_packet(count);
+//    spim_receive_packet(m_rx_packet, RADIO_MAX_PAYLOAD_LEN, count);
+
 }
 
 
@@ -85,7 +86,7 @@ void rcea_set_channel(uint8_t channel) {
 
     radio_config_channel(channel);
 
-//    spim_transfer_channel(channel, count);
+    spim_transfer_channel(channel, count);
 }
 
 
@@ -99,7 +100,7 @@ void rcea_init(void) {
     m_config.mode = NRF_RADIO_MODE_NRF_250KBIT;
     m_config.txpower = NRF_RADIO_TXPOWER_0DBM;
 
-    radio_init(&m_config);
+    radio_init(&m_config, m_tx_packet);
 }
 
 

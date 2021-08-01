@@ -9,6 +9,8 @@
 
 #include "crc16.h"
 
+#include "nrf_delay.h"
+
 #define SPIM_INSTANCE 0
 static const nrfx_spim_t spim = NRFX_SPIM_INSTANCE(SPIM_INSTANCE);
 
@@ -32,8 +34,6 @@ static volatile bool spi_xfer_done;
 
 static volatile bool message_received;
 
-static volatile bool ack_received;
-
 
 
 /**@brief Function for handling SPI events
@@ -50,15 +50,10 @@ static void spim_event_handler(const nrfx_spim_evt_t * event,
         message_received = true;
 
         NRF_LOG_RAW_INFO(" Received:");
-        NRF_LOG_HEXDUMP_INFO(m_rx_buf, strlen((const char *)m_rx_buf));
-        bsp_board_led_invert(BSP_BOARD_LED_1);
+        //NRF_LOG_HEXDUMP_INFO(m_rx_buf, RX_SIZE);
+                        bsp_board_led_invert(BSP_BOARD_LED_0);
+
     }
-
-
-
-        //TODO here timeout on receiving answer
-        //TODO analyze packet
-        //TODO set ready to send flag
 }
 
 
@@ -90,17 +85,17 @@ static void spim_set_tx_message(uint16_t num, spi_payload_t * payload) {
     
     
     memcpy(m_tx_buf, &num, sizeof(num));
-    uint8_t size = sizeof(payload);
+    uint8_t size = sizeof(spi_payload);
     memcpy(m_tx_buf + sizeof(num), &size, 1);
-    memcpy(m_tx_buf + sizeof(num) + 1, payload, sizeof(payload));
+    memcpy(m_tx_buf + sizeof(num) + 1, payload, sizeof(spi_payload));
 
     uint16_t crc = crc16_compute(m_tx_buf, TX_SIZE-2, NULL);
-    memcpy(m_tx_buf + sizeof(num) + 1 + sizeof(payload), &crc, sizeof(crc));
+    memcpy(m_tx_buf + sizeof(num) + 1 + sizeof(spi_payload), &crc, sizeof(crc));
 
 }
 
 static uint16_t spim_get_rx_number() {
-    uint8_t num;
+    uint16_t num;
 
     memcpy(&num, m_rx_buf, sizeof(num));
 
@@ -127,7 +122,6 @@ static spi_message_t spim_get_rx_payload_type() {
 
 static bool spim_receive_ack(uint16_t num) {
 
-    ack_received = false;
     memset(m_rx_buf, 0, m_rx_length);
 
     spi_payload.type = WAIT_ACK;
@@ -135,40 +129,58 @@ static bool spim_receive_ack(uint16_t num) {
     spim_set_tx_message(num, &spi_payload);
 
 
-    //while (!ack_received) {
 
-        for (int i = 0; i < 10 && !ack_received; i++) {
-    
-            spi_xfer_done = false;
+    for (int i = 0; i < 10; i++) {
 
-            APP_ERROR_CHECK(nrfx_spim_xfer(&spim, &xfer_data, 0));
+        message_received = false;
+        spi_xfer_done = false;
+
+        APP_ERROR_CHECK(nrfx_spim_xfer(&spim, &xfer_data, 0));
         
-            while (!spi_xfer_done)
-            {
-                __WFE();
-            }
-
-            if (message_received) {
-            
-                if (spim_get_rx_number() != num) {
-                    continue;
-                }
-
-                spi_message_t payload_type = spim_get_rx_payload_type();
-            
-                if (payload_type == ACKNOWLEDGE) {
-                        return true;
-                }
-            }
-
-            //TODO delay
-
+        while (!spi_xfer_done)
+        {
+            __WFE();
         }
 
-        
-    //}
+        if (message_received) {
+            
+            if (spim_get_rx_number() != num) {
+                continue;
+            }
+
+            spi_message_t payload_type = spim_get_rx_payload_type();
+            
+            if (payload_type == ACKNOWLEDGE) {
+                return true;
+            }
+        }
+
+        //TODO delay
+
+        nrf_delay_ms(100);
+
+    }
 
     return false;
+}
+
+
+
+static void spim_send_ack(uint16_t num) {
+    
+    spi_payload.type = ACKNOWLEDGE;
+
+    spim_set_tx_message(num, &spi_payload);
+
+    spi_xfer_done = false;
+
+    APP_ERROR_CHECK(nrfx_spim_xfer(&spim, &xfer_data, 0));
+        
+    while (!spi_xfer_done)
+    {
+        __WFE();
+    }
+
 }
 
 
@@ -190,13 +202,13 @@ bool spim_transfer_channel(uint8_t channel, uint16_t count) {
 
     APP_ERROR_CHECK(nrfx_spim_xfer(&spim, &xfer_data, 0));
 
-                
     while (!spi_xfer_done)
     {
         __WFE();
     }
 
     //TODO delay?
+    nrf_delay_ms(100);
 
     return spim_receive_ack(count);
 }
@@ -224,8 +236,9 @@ bool spim_transfer_mode(nrf_radio_mode_t mode, uint16_t count) {
         __WFE();
     }
 
-    return spim_receive_ack(count);
+    nrf_delay_ms(100);
 
+    return spim_receive_ack(count);
 }
 
 
@@ -239,19 +252,49 @@ bool spim_receive_packet(uint8_t * p_packet, size_t length, uint16_t count) {
 
     memset(m_rx_buf, 0, m_rx_length);
 
+    spi_payload.type = PACKET;
 
-    
+    spim_set_tx_message(count, &spi_payload);
 
+    for (int i = 0; i < 10; i++) {
 
-    APP_ERROR_CHECK(nrfx_spim_xfer(&spim, &xfer_data, 0));
+        message_received = false;
+        spi_xfer_done = false;
 
-    //TODO timeout
-    while(!message_received) {
-        __WFE();
+        APP_ERROR_CHECK(nrfx_spim_xfer(&spim, &xfer_data, 0));
+        
+        while (!spi_xfer_done)
+        {
+            __WFE();
+        }
+
+        if (message_received) {
+            
+            if (spim_get_rx_number() != count) {
+                continue;
+            }
+
+            spi_message_t payload_type = spim_get_rx_payload_type();
+            
+            if (payload_type == PACKET) {
+                //TODO check crc
+
+                memcpy(p_packet, xfer_data.p_rx_buffer + 4, length);
+                //NRF_LOG_HEXDUMP_INFO(p_packet, RX_SIZE);
+                bsp_board_led_invert(BSP_BOARD_LED_1);
+
+                
+
+                spim_send_ack(count);
+
+                return true;
+            }
+        }
+
+        nrf_delay_ms(200);
     }
 
-    memcpy(p_packet, xfer_data.p_rx_buffer + 3, length);
-
+    return false;
 }
 
 

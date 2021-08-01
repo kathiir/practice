@@ -74,6 +74,7 @@
       <file file_name="../../../../../components/libraries/hardfault/hardfault_implementation.c" />
       <file file_name="../../../../../components/libraries/experimental_section_vars/nrf_section_iter.c" />
       <file file_name="../../../../../components/libraries/pwr_mgmt/nrf_pwr_mgmt.c" />
+      <file file_name="../../../../../components/libraries/crc16/crc16.c" />
     </folder>
     <folder Name="nRF_Drivers">
       <file file_name="../../../../../modules/nrfx/soc/nrfx_atomic.c" />

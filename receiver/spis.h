@@ -44,11 +44,19 @@ void spis_init();
 
 bool spis_check_config_received();
 
+uint16_t spis_get_rx_number();
+
 spi_payload_t spis_get_payload();
 
-void spis_set_tx_message(uint8_t * p_packet, size_t length);
 
-void spis_receive_ack();
+
+void spis_set_tx_message(uint8_t * p_packet, uint8_t length);
+
+void spis_send_ack(uint16_t count);
+
+
+bool spis_receive_ack(uint16_t count);
+
 
 void spis_receive_config();
 

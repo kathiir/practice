@@ -315,7 +315,7 @@ static void cmd_set_message(nrf_cli_t const * p_cli, size_t argc, char **argv)
     }
 
 
-    //TODO check length
+    //TODO check length and set message
     if (argc == 2) {
         nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL,
                     "Message set to: %s \n\n", argv[0]);

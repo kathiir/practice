@@ -2,15 +2,7 @@
 <session>
  <Bookmarks/>
  <Breakpoints groups="Breakpoints" active_group="Breakpoints">
-  <BreakpointListItem trigger="" line="67" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="2" filename="../../../main.c" useHWbreakpoint="false"/>
   <BreakpointListItem trigger="" line="419" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="2" filename="../../../../../modules/nrfx/drivers/src/nrfx_spis.c" useHWbreakpoint="false"/>
-  <BreakpointListItem trigger="" line="157" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="2" filename="../../../radio.c" useHWbreakpoint="false"/>
-  <BreakpointListItem trigger="" line="36" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="2" filename="../../../rcea_receiver.c" useHWbreakpoint="false"/>
-  <BreakpointListItem trigger="" line="111" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="2" filename="../../../spis.c" useHWbreakpoint="false"/>
-  <BreakpointListItem trigger="" line="113" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="2" filename="../../../spis.c" useHWbreakpoint="false"/>
-  <BreakpointListItem trigger="" line="37" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="2" filename="../../../spis.c" useHWbreakpoint="false"/>
-  <BreakpointListItem trigger="" line="72" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="2" filename="../../../spis.c" useHWbreakpoint="false"/>
-  <BreakpointListItem trigger="" line="98" counter="0" hardwareBreakpoint="" isFunctionBreakpoint="false" action="" expression="" group="Breakpoints" type="Breakpoint" state="2" filename="../../../spis.c" useHWbreakpoint="false"/>
  </Breakpoints>
  <ExecutionProfileWindow/>
  <FrameBufferWindow>
@@ -77,13 +69,13 @@
   <Watches active="0" update="Never"/>
  </Watch4>
  <Files>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="22" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../main.c" selected="1" top="26" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="35" y="165" useTextEdit="1" openedFrom="C:/nRF5_SDK_17.0.2_d674dde/projects/receiver/rcea_receiver.c" useBinaryEdit="0" left="0" path="../../../radio.c" selected="0" top="0" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="35" useTextEdit="1" openedFrom="C:/nRF5_SDK_17.0.2_d674dde/projects/receiver/main.c" useBinaryEdit="0" left="0" path="../../../rcea_receiver.c" selected="0" top="27" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="10" useTextEdit="1" openedFrom="C:/nRF5_SDK_17.0.2_d674dde/projects/receiver/rcea_receiver.c" useBinaryEdit="0" left="0" path="../../../rcea_receiver.h" selected="0" top="0" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="6" y="53" useTextEdit="1" openedFrom="C:/nRF5_SDK_17.0.2_d674dde/projects/receiver/spis.c" useBinaryEdit="0" left="0" path="../../../radio.h" selected="0" top="0" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditRight" x="39" y="18" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../spis.c" selected="0" top="54" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditRight" x="0" y="31" useTextEdit="1" openedFrom="C:/nRF5_SDK_17.0.2_d674dde/projects/receiver/spis.c" useBinaryEdit="0" left="0" path="../../../spis.h" selected="0" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="59" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../main.c" selected="0" top="50" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="16" y="48" useTextEdit="1" openedFrom="C:/nRF5_SDK_17.0.2_d674dde/projects/receiver/main.c" useBinaryEdit="0" left="0" path="../../../rcea_receiver.c" selected="1" top="27" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="18" y="16" useTextEdit="1" openedFrom="C:/nRF5_SDK_17.0.2_d674dde/projects/receiver/rcea_receiver.c" useBinaryEdit="0" left="0" path="../../../rcea_receiver.h" selected="0" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="7" y="169" useTextEdit="1" openedFrom="C:/nRF5_SDK_17.0.2_d674dde/projects/receiver/rcea_receiver.c" useBinaryEdit="0" left="0" path="../../../radio.c" selected="0" top="160" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="43" useTextEdit="1" openedFrom="C:/nRF5_SDK_17.0.2_d674dde/projects/receiver/spis.c" useBinaryEdit="0" left="0" path="../../../radio.h" selected="0" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="40" y="161" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../spis.c" selected="0" top="141" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="53" useTextEdit="1" openedFrom="C:/nRF5_SDK_17.0.2_d674dde/projects/receiver/spis.c" useBinaryEdit="0" left="0" path="../../../spis.h" selected="0" top="33" codecName="Default"/>
  </Files>
- <ARMCrossStudioWindow activeProject="receiver_pca10040" fileDialogDefaultFilter="*.c;*.cpp;*.cxx;*.cc;*.h;*.hpp;*.hxx" autoConnectTarget="J-Link" buildConfiguration="Release" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="C:/nRF5_SDK_17.0.2_d674dde/projects/receiver" debugSearchPath="" autoConnectCapabilities="3199"/>
+ <ARMCrossStudioWindow activeProject="receiver_pca10040" fileDialogDefaultFilter="*.c;*.cpp;*.cxx;*.cc;*.h;*.hpp;*.hxx" autoConnectTarget="J-Link" buildConfiguration="Release" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="C:/nRF5_SDK_17.0.2_d674dde/components/libraries/crc16" debugSearchPath="" autoConnectCapabilities="3711"/>
 </session>

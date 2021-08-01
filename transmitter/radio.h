@@ -44,7 +44,7 @@ typedef struct {
 
 /**@brief Function for initializing radio module.
  */
-void radio_init(radio_config_t * p_config);
+void radio_init(radio_config_t * p_config, uint8_t * p_tx_packet);
 
 
 //TODO

@@ -41,6 +41,7 @@ typedef struct {
 
 } radio_config_t;
 
+void receive_packet();
 
 void radio_rx(nrf_radio_mode_t mode, uint8_t channel);
 
