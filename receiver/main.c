@@ -66,19 +66,21 @@ int main(void)
 
     clock_init();
 
-    bsp_board_led_invert(BSP_BOARD_LED_1);
+    bsp_board_led_invert(BSP_BOARD_LED_0);
 
     err_code = app_timer_init();
 
     APP_ERROR_CHECK(err_code);
+    
+    bsp_board_led_invert(BSP_BOARD_LED_1);
 
     log_init();
 
-    bsp_board_led_invert(BSP_BOARD_LED_0);
-
-
+    bsp_board_led_invert(BSP_BOARD_LED_2);
 
     rcea_receiver_init();
+    
+    bsp_board_led_invert(BSP_BOARD_LED_3);
 
     rcea_process();
 

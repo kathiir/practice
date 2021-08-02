@@ -6,6 +6,7 @@
 
 #include "nrf.h"
 #include "nrf_log.h"
+#include "nrf_log_ctrl.h"
 
 #include "crc16.h"
 
@@ -44,14 +45,16 @@ static void spim_event_handler(const nrfx_spim_evt_t * event,
 
     spi_xfer_done = true;
     NRF_LOG_INFO("Transfer completed.");
+
+
     message_received = false;
-    if (m_rx_buf[0] != 0)
+    if (m_rx_buf[0] != 0 || m_rx_buf[0] != 255) //TODO
     {
         message_received = true;
 
-        NRF_LOG_RAW_INFO(" Received:");
-        //NRF_LOG_HEXDUMP_INFO(m_rx_buf, RX_SIZE);
-                        bsp_board_led_invert(BSP_BOARD_LED_0);
+        NRF_LOG_RAW_INFO(" Received: \n\r");
+        NRF_LOG_HEXDUMP_INFO(m_rx_buf, RX_SIZE);
+
 
     }
 }
@@ -72,7 +75,6 @@ void spim_init(void)
     ret = nrfx_spim_init(&spim, &spim_config, spim_event_handler, NULL);
     APP_ERROR_CHECK(ret);
 
-
     xfer_data.p_tx_buffer = m_tx_buf;
     xfer_data.p_rx_buffer = m_rx_buf;
     xfer_data.tx_length = m_tx_length;
@@ -91,6 +93,8 @@ static void spim_set_tx_message(uint16_t num, spi_payload_t * payload) {
 
     uint16_t crc = crc16_compute(m_tx_buf, TX_SIZE-2, NULL);
     memcpy(m_tx_buf + sizeof(num) + 1 + sizeof(spi_payload), &crc, sizeof(crc));
+
+    //NRF_LOG_HEXDUMP_INFO(m_tx_buf, TX_SIZE);
 
 }
 
@@ -124,13 +128,14 @@ static bool spim_receive_ack(uint16_t num) {
 
     memset(m_rx_buf, 0, m_rx_length);
 
-    spi_payload.type = WAIT_ACK;
+    //spi_payload.type = WAIT_ACK;
 
-    spim_set_tx_message(num, &spi_payload);
+    //spim_set_tx_message(num, &spi_payload);
+
+            nrf_delay_ms(100);
 
 
-
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 20; i++) {
 
         message_received = false;
         spi_xfer_done = false;
@@ -256,12 +261,18 @@ bool spim_receive_packet(uint8_t * p_packet, size_t length, uint16_t count) {
 
     spim_set_tx_message(count, &spi_payload);
 
+    NRF_LOG_INFO("Message set");
+
     for (int i = 0; i < 10; i++) {
+
+         NRF_LOG_INFO("Loop.");
 
         message_received = false;
         spi_xfer_done = false;
 
         APP_ERROR_CHECK(nrfx_spim_xfer(&spim, &xfer_data, 0));
+
+         NRF_LOG_INFO("Xfer.");
         
         while (!spi_xfer_done)
         {
@@ -271,17 +282,21 @@ bool spim_receive_packet(uint8_t * p_packet, size_t length, uint16_t count) {
         if (message_received) {
             
             if (spim_get_rx_number() != count) {
+                 NRF_LOG_INFO("Number wrong");
                 continue;
             }
 
             spi_message_t payload_type = spim_get_rx_payload_type();
+
+             NRF_LOG_INFO("Payload");
             
             if (payload_type == PACKET) {
                 //TODO check crc
 
+                 NRF_LOG_INFO("Packet");
+
                 memcpy(p_packet, xfer_data.p_rx_buffer + 4, length);
                 //NRF_LOG_HEXDUMP_INFO(p_packet, RX_SIZE);
-                bsp_board_led_invert(BSP_BOARD_LED_1);
 
                 
 

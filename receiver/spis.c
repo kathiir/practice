@@ -31,9 +31,9 @@ static const uint8_t m_rx_length = sizeof(m_rx_buf);
 
 static volatile bool spis_xfer_done;
 
-static volatile bool spis_config_received = false;
+static volatile bool spis_config_received;
 
-static volatile bool spis_ack_received = false;
+static volatile bool spis_ack_received;
 
 
 static spi_payload_t spis_get_rx_payload() {
@@ -51,27 +51,25 @@ static spi_payload_t spis_get_rx_payload() {
 static void spis_event_handler(const nrfx_spis_evt_t * event,
                         void * p_context)
 {
-    spis_config_received = false;
+    /*spis_config_received = false;
     spis_ack_received = false;
     spis_xfer_done = false;
-
+*/
     if (event->evt_type == NRFX_SPIS_XFER_DONE)
     {
         spis_xfer_done = true;
 
-        spi_payload = spis_get_rx_payload();
+        memcpy(&spi_payload, m_rx_buf + 3, sizeof(spi_payload));
 
 
         if (spi_payload.type == CONFIG_MODE || spi_payload.type == CONFIG_CHANNEL) {   
             spis_config_received = true;
 
-            bsp_board_led_invert(BSP_BOARD_LED_0);
         }
 
         if (spi_payload.type == ACKNOWLEDGE) {   
             spis_ack_received = true;
 
-            bsp_board_led_invert(BSP_BOARD_LED_0);
         }
     }
 }
@@ -159,7 +157,7 @@ bool spis_receive_ack(uint16_t count) {
 void spis_set_tx_message(uint8_t * p_packet, uint8_t length) {
 
     uint16_t num = 0;
-    memcpy(&num, p_packet, sizeof(num));
+    memcpy(&num, p_packet + 1, sizeof(num));
 
     memset(m_rx_buf, 0, m_rx_length);
     memset(m_tx_buf, 0, m_tx_length);
@@ -194,9 +192,13 @@ void spis_set_tx_message(uint8_t * p_packet, uint8_t length) {
 
     memset(m_rx_buf, 0, m_rx_length);
     memset(m_tx_buf, 0, m_tx_length);
+/*
+    spis_config_received = false;
+    spis_ack_received = false;
+    spis_xfer_done = false;
 
     APP_ERROR_CHECK(nrfx_spis_buffers_set(&spis, m_tx_buf, m_tx_length, m_rx_buf, m_rx_length));
-
+*/
 }
 
 
@@ -207,18 +209,20 @@ void spis_send_ack(uint16_t count) {
 
     memcpy(m_tx_buf, &count, sizeof(count));
 
-    spi_payload_t payload;
-    payload.type = ACKNOWLEDGE;
 
-    uint8_t length = sizeof(payload);
+    spi_message_t message = ACKNOWLEDGE;
+
+    uint8_t length = 2;
 
     memcpy(m_tx_buf + sizeof(count), &length, 1);
 
-    memcpy(m_tx_buf + sizeof(count) + 1, &payload, length);    
+    memcpy(m_tx_buf + sizeof(count) + 1, &message, 1);    
     
     
     uint16_t crc = crc16_compute(m_tx_buf, sizeof(count) + 1 + length, NULL); //TODO length
     memcpy(m_tx_buf + sizeof(count) + 1 + length, &crc, sizeof(crc));
+
+    spis_xfer_done = false;
 
     APP_ERROR_CHECK(nrfx_spis_buffers_set(&spis, m_tx_buf, m_tx_length, m_rx_buf, m_rx_length));
 
@@ -235,6 +239,7 @@ void spis_send_ack(uint16_t count) {
 
 void spis_receive_config() {
     spis_config_received = false;
+    spis_ack_received = false;
     spis_xfer_done = false;
 
     memset(m_rx_buf, 0, m_rx_length);

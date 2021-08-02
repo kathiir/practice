@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include "nrf.h"
 #include "nrf_log.h"
+#include "boards.h"
 
 
 #include "nrf_rng.h"
@@ -217,53 +218,6 @@ void radio_config_tx_power(nrf_radio_txpower_t txpower) {
 }
 
 
-// TODO
-/**@brief Function for sending radio packet.
- *//*
-void send_packet(nrf_radio_mode_t mode,
-                 nrf_radio_txpower_t txpower,
-                 uint8_t channel)
-{
-    radio_disable();
-    generate_packet(mode);
-
-    switch (mode)
-    {
-#if EXTENDED_SUPPORT
-        case NRF_RADIO_MODE_IEEE802154_250KBIT:
-            nrf_radio_shorts_enable(NRF_RADIO_SHORT_READY_START_MASK |
-                                    NRF_RADIO_SHORT_PHYEND_START_MASK);
-            break;
-#endif
-        default:
-#ifdef NRF52832_XXAA
-        case NRF_RADIO_MODE_NRF_250KBIT:
-#endif
-            nrf_radio_shorts_enable(NRF_RADIO_SHORT_READY_START_MASK |
-                                    NRF_RADIO_SHORT_END_START_MASK);
-            break;
-    }
-
-    nrf_radio_mode_set(mode);
-    nrf_radio_txpower_set(txpower);
-
-    radio_channel_set(mode, channel);
-
-
-    nrf_radio_event_clear(NRF_RADIO_EVENT_END);
-    nrf_radio_int_enable(NRF_RADIO_INT_END_MASK);
-
-    nrf_radio_task_trigger(NRF_RADIO_TASK_TXEN);
-
-
-    while (!nrf_radio_event_check(NRF_RADIO_EVENT_END))
-    {
-        // wait 
-    }
-
-}
-*/
-
 void radio_send_packet(uint16_t count)
 {
     generate_packet(m_p_config->mode, count);
@@ -290,6 +244,8 @@ void radio_send_packet(uint16_t count)
     nrf_radio_int_enable(NRF_RADIO_INT_END_MASK);
 
     nrf_radio_task_trigger(NRF_RADIO_TASK_TXEN);
+
+
 
     while (!nrf_radio_event_check(NRF_RADIO_EVENT_END))
     {

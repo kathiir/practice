@@ -325,7 +325,7 @@
 // <e> NRFX_SPIS_CONFIG_LOG_ENABLED - Enables logging in the module.
 //==========================================================
 #ifndef NRFX_SPIS_CONFIG_LOG_ENABLED
-#define NRFX_SPIS_CONFIG_LOG_ENABLED 1
+#define NRFX_SPIS_CONFIG_LOG_ENABLED 0
 #endif
 // <o> NRFX_SPIS_CONFIG_LOG_LEVEL  - Default Severity level
  
@@ -561,7 +561,7 @@
 #endif
 // <o> NRFX_GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS - Number of lower power input pins 
 #ifndef NRFX_GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS
-#define NRFX_GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS 1
+#define NRFX_GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS 4
 #endif
 
 // <o> NRFX_GPIOTE_CONFIG_IRQ_PRIORITY  - Interrupt priority
@@ -732,7 +732,7 @@
  
 
 #ifndef NRFX_RTC_DEFAULT_CONFIG_RELIABLE
-#define NRFX_RTC_DEFAULT_CONFIG_RELIABLE 0
+#define NRFX_RTC_DEFAULT_CONFIG_RELIABLE 1
 #endif
 
 // <o> NRFX_RTC_DEFAULT_CONFIG_IRQ_PRIORITY  - Interrupt priority
@@ -899,7 +899,7 @@
 // <e> NRFX_TIMER_CONFIG_LOG_ENABLED - Enables logging in the module.
 //==========================================================
 #ifndef NRFX_TIMER_CONFIG_LOG_ENABLED
-#define NRFX_TIMER_CONFIG_LOG_ENABLED 1
+#define NRFX_TIMER_CONFIG_LOG_ENABLED 0
 #endif
 // <o> NRFX_TIMER_CONFIG_LOG_LEVEL  - Default Severity level
  
@@ -1376,7 +1376,7 @@
 // <31=> 1024 Hz 
 
 #ifndef APP_TIMER_CONFIG_RTC_FREQUENCY
-#define APP_TIMER_CONFIG_RTC_FREQUENCY 1
+#define APP_TIMER_CONFIG_RTC_FREQUENCY 0
 #endif
 
 // <o> APP_TIMER_CONFIG_IRQ_PRIORITY  - Interrupt priority

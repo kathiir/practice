@@ -29,15 +29,19 @@ static uint8_t m_rx_packet[RADIO_MAX_PAYLOAD_LEN];
  */
 void rcea_send_packet(void) {
 
+    NRF_LOG_INFO("Func.");
+    
     count++;
-/*
-    send_packet(NRF_RADIO_MODE_NRF_250KBIT, NRF_RADIO_TXPOWER_0DBM, 11);
-*/
+
+    NRF_LOG_INFO("%d", count);
+
     radio_send_packet(count);
 
+    NRF_LOG_INFO("SPIM");
 
-    //spim_receive_packet(count);
-//    spim_receive_packet(m_rx_packet, RADIO_MAX_PAYLOAD_LEN, count);
+    spim_receive_packet(m_rx_packet, RADIO_MAX_PAYLOAD_LEN, count);
+
+
 
 }
 
@@ -58,6 +62,7 @@ bool rcea_check_channel(uint8_t channel) {
 }
 
 
+//TODO
 /**@brief Function for setting radio mode.
  */
 void rcea_set_mode(nrf_radio_mode_t mode) {
@@ -65,7 +70,7 @@ void rcea_set_mode(nrf_radio_mode_t mode) {
 
     radio_config_mode(mode);
 
-//    spim_transfer_mode(mode, count);
+//    spim_transfer_mode(mode, count); 
 }
 
 

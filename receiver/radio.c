@@ -14,7 +14,7 @@ static uint8_t * m_p_rx_packet = NULL;
 
 static radio_config_t * m_p_config = NULL;
 
-static volatile bool packet_received = false;
+static volatile bool packet_received;
 
 
 static void radio_disable(void)
@@ -151,40 +151,31 @@ bool radio_check_packet_received(void) {
 
 void RADIO_IRQHandler(void)
 {
-
-
-    bsp_board_led_invert(BSP_BOARD_LED_3);
-    packet_received = false;
-
     if (nrf_radio_event_check(NRF_RADIO_EVENT_CRCOK))
     {
+        packet_received = true;
         nrf_radio_event_clear(NRF_RADIO_EVENT_CRCOK);
        
-        bsp_board_led_invert(BSP_BOARD_LED_2);
-        packet_received = true;
+        bsp_board_led_invert(BSP_BOARD_LED_3);
+        
     }
 
     if (nrf_radio_event_check(NRF_RADIO_EVENT_CRCERROR))
     {
+        packet_received = true;
         nrf_radio_event_clear(NRF_RADIO_EVENT_CRCERROR);
        
-        bsp_board_led_invert(BSP_BOARD_LED_1);
-        packet_received = true;
+        bsp_board_led_invert(BSP_BOARD_LED_3);
     }
-
-
 }
 
 
 void radio_init(radio_config_t * p_config, uint8_t * p_rx_packet){
 
-    bsp_board_led_invert(BSP_BOARD_LED_1);
 
     if (!m_p_config)
     {
         NVIC_EnableIRQ(RADIO_IRQn);
-
-        bsp_board_led_invert(BSP_BOARD_LED_3);
 
         m_p_config = p_config;
 
