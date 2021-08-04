@@ -5,7 +5,13 @@
 
 #include "nrf_cli_libuarte.h"
 
+#include "nrf.h"
+#include "nrf_log.h"
+#include "nrf_log_ctrl.h"
 
+#include "nrf_delay.h"
+
+#include "boards.h"
 
 #include "rcea.h"
 
@@ -46,9 +52,9 @@ static void cmd_welcome(nrf_cli_t const * p_cli, size_t argc, char **argv)
 }
 
 
-/**@brief Radio test debug command.
+/**@brief Function for printing current parameters.
  */
-static void cmd_send_packet(nrf_cli_t const * p_cli, size_t argc, char **argv)
+static void cmd_info(nrf_cli_t const * p_cli, size_t argc, char **argv)
 {
     UNUSED_PARAMETER(argc);
     UNUSED_PARAMETER(argv);
@@ -59,30 +65,129 @@ static void cmd_send_packet(nrf_cli_t const * p_cli, size_t argc, char **argv)
         return;
     }
 
-    rcea_send_packet();
-
-    nrf_cli_fprintf(p_cli,NRF_CLI_NORMAL,
-                    "Packet sent... I hope \n\n");
-}
+    nrf_cli_fprintf(p_cli, NRF_CLI_INFO, "Parameters:\r\n");
 
 
-/**@brief SPI test debug command.
- */
-static void cmd_send_config(nrf_cli_t const * p_cli, size_t argc, char **argv)
-{
-    UNUSED_PARAMETER(argc);
-    UNUSED_PARAMETER(argv);
-
-    if (nrf_cli_help_requested(p_cli))
-    {
-        nrf_cli_help_print(p_cli, NULL, 0);
-        return;
+    switch (rcea_get_mode()) {
+#if EXTENDED_SUPPORT    
+        case NRF_RADIO_MODE_IEEE802154_250KBIT:
+            nrf_cli_fprintf(p_cli, 
+                            NRF_CLI_INFO, 
+                            "Mode: %s\r\n",
+                            STRINGIFY_(NRF_RADIO_MODE_IEEE802154_250KBIT));
+            break;
+#endif
+        case NRF_RADIO_MODE_NRF_250KBIT:
+        default:
+            nrf_cli_fprintf(p_cli, 
+                            NRF_CLI_INFO, 
+                            "Mode: %s\r\n",
+                            STRINGIFY_(NRF_RADIO_MODE_NRF_250KBIT));
+            break;
     }
 
-    rcea_set_channel(11);
+    switch (rcea_get_txpower()) {
+#if EXTENDED_SUPPORT    
+        case NRF_RADIO_TXPOWER_POS8DBM:
+            nrf_cli_fprintf(p_cli, 
+                            NRF_CLI_INFO, 
+                            "TX power: %s\r\n",
+                            STRINGIFY_(NRF_RADIO_TXPOWER_POS8DBM));
+            break;
+        case NRF_RADIO_TXPOWER_POS7DBM:
+            nrf_cli_fprintf(p_cli, 
+                            NRF_CLI_INFO, 
+                            "TX power: %s\r\n",
+                            STRINGIFY_(NRF_RADIO_TXPOWER_POS7DBM));
+            break;
+        case NRF_RADIO_TXPOWER_POS6DBM:
+            nrf_cli_fprintf(p_cli, 
+                            NRF_CLI_INFO, 
+                            "TX power: %s\r\n",
+                            STRINGIFY_(NRF_RADIO_TXPOWER_POS6DBM));
+            break;
+        case NRF_RADIO_TXPOWER_POS5DBM:
+            nrf_cli_fprintf(p_cli, 
+                            NRF_CLI_INFO, 
+                            "TX power: %s\r\n",
+                            STRINGIFY_(NRF_RADIO_TXPOWER_POS5DBM));
+            break;
+        case NRF_RADIO_TXPOWER_POS2DBM:
+            nrf_cli_fprintf(p_cli, 
+                            NRF_CLI_INFO, 
+                            "TX power: %s\r\n",
+                            STRINGIFY_(NRF_RADIO_TXPOWER_POS2DBM));
+            break;
 
-    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL,
-                    "Config sent... I hope \n\n");
+#endif
+        case NRF_RADIO_TXPOWER_POS4DBM:
+            nrf_cli_fprintf(p_cli, 
+                            NRF_CLI_INFO, 
+                            "TX power: %s\r\n",
+                            STRINGIFY_(NRF_RADIO_TXPOWER_POS4DBM));
+            break;
+        case NRF_RADIO_TXPOWER_POS3DBM:
+            nrf_cli_fprintf(p_cli, 
+                            NRF_CLI_INFO, 
+                            "TX power: %s\r\n",
+                            STRINGIFY_(NRF_RADIO_TXPOWER_POS3DBM));
+            break;
+        case NRF_RADIO_TXPOWER_0DBM:
+            nrf_cli_fprintf(p_cli, 
+                            NRF_CLI_INFO, 
+                            "TX power: %s\r\n",
+                            STRINGIFY_(NRF_RADIO_TXPOWER_0DBM));
+            break;
+        case NRF_RADIO_TXPOWER_NEG4DBM:
+            nrf_cli_fprintf(p_cli, 
+                            NRF_CLI_INFO, 
+                            "TX power: %s\r\n",
+                            STRINGIFY_(NRF_RADIO_TXPOWER_NEG4DBM));
+            break;
+        case NRF_RADIO_TXPOWER_NEG8DBM:
+            nrf_cli_fprintf(p_cli, 
+                            NRF_CLI_INFO, 
+                            "TX power: %s\r\n",
+                            STRINGIFY_(NRF_RADIO_TXPOWER_NEG8DBM));
+            break;
+        case NRF_RADIO_TXPOWER_NEG12DBM:
+            nrf_cli_fprintf(p_cli, 
+                            NRF_CLI_INFO, 
+                            "TX power: %s\r\n",
+                            STRINGIFY_(NRF_RADIO_TXPOWER_NEG12DBM));
+            break;
+        case NRF_RADIO_TXPOWER_NEG16DBM:
+            nrf_cli_fprintf(p_cli, 
+                            NRF_CLI_INFO, 
+                            "TX power: %s\r\n",
+                            STRINGIFY_(NRF_RADIO_TXPOWER_NEG16DBM));
+            break;
+        case NRF_RADIO_TXPOWER_NEG20DBM:
+            nrf_cli_fprintf(p_cli, 
+                            NRF_CLI_INFO, 
+                            "TX power: %s\r\n",
+                            STRINGIFY_(NRF_RADIO_TXPOWER_NEG20DBM));
+            break;
+        case NRF_RADIO_TXPOWER_NEG30DBM:
+            nrf_cli_fprintf(p_cli, 
+                            NRF_CLI_INFO, 
+                            "TX power: %s\r\n",
+                            STRINGIFY_(NRF_RADIO_TXPOWER_NEG30DBM));
+            break;
+        case NRF_RADIO_TXPOWER_NEG40DBM:
+            nrf_cli_fprintf(p_cli, 
+                            NRF_CLI_INFO, 
+                            "TX power: %s\r\n",
+                            STRINGIFY_(NRF_RADIO_TXPOWER_NEG40DBM));
+            break;
+        default:
+            nrf_cli_fprintf(p_cli, 
+                            NRF_CLI_INFO, 
+                            "TX power: unknown\r\n");
+            break;
+    }    
+
+    nrf_cli_fprintf(p_cli, NRF_CLI_INFO, "Channel: %d\r\n", rcea_get_channel());
 }
 
 
@@ -111,7 +216,7 @@ static void cmd_set_channel(nrf_cli_t const * p_cli, size_t argc, char **argv)
         rcea_set_channel(channel);
 
         nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL,
-                    "Channel set to: %d.\n\n", channel);
+                    "Channel set to: %d.\r\n", channel);
     } else {
         nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL,
                         "Invalid channel.\r\n");
@@ -142,7 +247,7 @@ static void cmd_set_mode(nrf_cli_t const * p_cli, size_t argc, char **argv)
 }
 
 
-//TODO NEED MORE MODES
+
 #if EXTENDED_SUPPORT
 
 static void cmd_mode_ieee802154_250kbit(nrf_cli_t const * p_cli, size_t argc, char **argv)
@@ -160,6 +265,7 @@ static void cmd_mode_nrf_250kbit(nrf_cli_t const * p_cli, size_t argc, char **ar
 
     nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Radio mode set to: %s.\r\n", STRINGIFY_(NRF_RADIO_MODE_NRF_250KBIT));
 }
+
 
 /**@brief Function for setting radio output power.
  */
@@ -190,35 +296,35 @@ static void cmd_txpower_pos8dBm(nrf_cli_t const * p_cli, size_t argc, char **arg
 {
     rcea_set_tx_power(NRF_RADIO_TXPOWER_POS8DBM);
 
-    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: 8 dBm.\n\n");
+    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: 8 dBm.\r\n");
 }
 
 static void cmd_txpower_pos7dBm(nrf_cli_t const * p_cli, size_t argc, char **argv)
 {
     rcea_set_tx_power(NRF_RADIO_TXPOWER_POS7DBM);
 
-    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: 7 dBm.\n\n");
+    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: 7 dBm.\r\n");
 }
 
 static void cmd_txpower_pos6dBm(nrf_cli_t const * p_cli, size_t argc, char **argv)
 {
     rcea_set_tx_power(NRF_RADIO_TXPOWER_POS6DBM);
 
-    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: 6 dBm.\n\n");
+    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: 6 dBm.\r\n");
 }
 
 static void cmd_txpower_pos5dBm(nrf_cli_t const * p_cli, size_t argc, char **argv)
 {
     rcea_set_tx_power(NRF_RADIO_TXPOWER_POS5DBM);
 
-    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: 5 dBm.\n\n");
+    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: 5 dBm.\r\n");
 }
 
 static void cmd_txpower_pos2dBm(nrf_cli_t const * p_cli, size_t argc, char **argv)
 {
     rcea_set_tx_power(NRF_RADIO_TXPOWER_POS2DBM);
 
-    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: 2 dBm.\n\n");
+    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: 2 dBm.\r\n");
 }
 
 #endif
@@ -227,70 +333,70 @@ static void cmd_txpower_pos4dBm(nrf_cli_t const * p_cli, size_t argc, char **arg
 {
     rcea_set_tx_power(NRF_RADIO_TXPOWER_POS4DBM);
 
-    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: 4 dBm.\n\n");
+    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: 4 dBm.\r\n");
 }
 
 static void cmd_txpower_pos3dBm(nrf_cli_t const * p_cli, size_t argc, char **argv)
 {
     rcea_set_tx_power(NRF_RADIO_TXPOWER_POS3DBM);
 
-    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: 4 dBm.\n\n");
+    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: 4 dBm.\r\n");
 }
 
 static void cmd_txpower_0dBm(nrf_cli_t const * p_cli, size_t argc, char **argv)
 {
     rcea_set_tx_power(NRF_RADIO_TXPOWER_0DBM);
 
-    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: 0 dBm.\n\n");
+    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: 0 dBm.\r\n");
 }
 
 static void cmd_txpower_neg4dBm(nrf_cli_t const * p_cli, size_t argc, char **argv)
 {
     rcea_set_tx_power(NRF_RADIO_TXPOWER_NEG4DBM);
 
-    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: -4 dBm.\n\n");    
+    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: -4 dBm.\r\n");    
 }
 
 static void cmd_txpower_neg8dBm(nrf_cli_t const * p_cli, size_t argc, char **argv)
 {
     rcea_set_tx_power(NRF_RADIO_TXPOWER_NEG8DBM);
 
-    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: -8 dBm.\n\n");    
+    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: -8 dBm.\r\n");    
 }
 
 static void cmd_txpower_neg12dBm(nrf_cli_t const * p_cli, size_t argc, char **argv)
 {
     rcea_set_tx_power(NRF_RADIO_TXPOWER_NEG12DBM);
 
-    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: -12 dBm.\n\n");    
+    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: -12 dBm.\r\n");    
 }
 
 static void cmd_txpower_neg16dBm(nrf_cli_t const * p_cli, size_t argc, char **argv)
 {
     rcea_set_tx_power(NRF_RADIO_TXPOWER_NEG16DBM);
 
-    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: -16 dBm.\n\n");    
+    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: -16 dBm.\r\n");    
 }
 
 static void cmd_txpower_neg20dBm(nrf_cli_t const * p_cli, size_t argc, char **argv)
 {
     rcea_set_tx_power(NRF_RADIO_TXPOWER_NEG20DBM);
 
-    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: -20 dBm.\n\n");    
+    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: -20 dBm.\r\n");    
 }
 
 static void cmd_txpower_neg30dBm(nrf_cli_t const * p_cli, size_t argc, char **argv)
 {
     rcea_set_tx_power(NRF_RADIO_TXPOWER_NEG30DBM);
 
-    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: -30 dBm.\n\n");    
+    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: -30 dBm.\r\n");    
 }
 
 static void cmd_txpower_neg40dBm(nrf_cli_t const * p_cli, size_t argc, char **argv)
 {
     rcea_set_tx_power(NRF_RADIO_TXPOWER_NEG40DBM);
 
-    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: -40 dBm.\n\n");    
+    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Output power set to: -40 dBm.\r\n");    
 }
 
 
@@ -298,8 +404,6 @@ static void cmd_txpower_neg40dBm(nrf_cli_t const * p_cli, size_t argc, char **ar
  */
 static void cmd_set_message(nrf_cli_t const * p_cli, size_t argc, char **argv)
 {
-    //UNUSED_PARAMETER(argc);
-    //UNUSED_PARAMETER(argv);
 
     if (nrf_cli_help_requested(p_cli))
     {
@@ -307,23 +411,29 @@ static void cmd_set_message(nrf_cli_t const * p_cli, size_t argc, char **argv)
         return;
     }
 
-
     if (argc > 2)
     {
         nrf_cli_fprintf(p_cli, NRF_CLI_ERROR, "%s: bad parameters count.\r\n", argv[0]);
         return;
     }
 
-
-    //TODO check length and set message
     if (argc == 2) {
-        nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL,
-                    "Message set to: %s \n\n", argv[0]);
+
+        if (rcea_check_length(strlen(argv[1]))) {
+            rcea_set_message(argv[1], strlen(argv[1]));
+            nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL,
+                    "Message set to: %s.\r\n", argv[1]);
+        } else {
+            nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL,
+                    "Failed to set message. Invalid length.\r\n", argv[1]);
+
+        }
+        
     }
 
     if (argc == 1) {
         nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL,
-                    "Message would be randomized. \n\n");
+                    "Message would be randomized. \r\n");
     }
     
 }
@@ -342,19 +452,61 @@ static void cmd_transmit_message(nrf_cli_t const * p_cli, size_t argc, char **ar
         return;
     }
 
-    rcea_send_packet();
+    if (argc > 2)
+    {
+        nrf_cli_fprintf(p_cli, NRF_CLI_ERROR, "%s: bad parameters count.\r\n", argv[0]);
+        return;
+    }
 
-    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL,
-                    "Channel sent... I hope \n\n");
+    if (argc == 2)
+    {
+        uint32_t repeats;
+
+        repeats = atoi(argv[1]);
+
+        
+
+        if (repeats > 0) {
+            int delivered = 0;
+
+            for (uint32_t i = 0; i < repeats; i++) {
+                bool success = rcea_send_packet();
+
+                bsp_board_led_invert(BSP_BOARD_LED_0);
+                nrf_delay_ms(100);
+
+                if (success) {
+                    delivered++;
+                }
+            }
+
+            float loss = ((float)(atoi(argv[1]) - delivered))/atoi(argv[1]) * 100;
+ 
+            nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "%s packets transmitted, %d received, %3.1f%% packet loss.\r\n", argv[1], delivered, loss);
+
+
+        }
+    }
+
+    if (argc == 1)
+    {
+        bool success = rcea_send_packet();
+        bsp_board_led_invert(BSP_BOARD_LED_0);
+
+        if (success) {
+            nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Successfully delivered packet.\r\n");
+        } else {
+            nrf_cli_fprintf(p_cli, NRF_CLI_ERROR, "Failed to return packet.\r\n");
+        }
+
+    }
+
 }
 
 
 NRF_CLI_CMD_REGISTER(welcome, NULL, "Print welcome message", cmd_welcome);
-NRF_CLI_CMD_REGISTER(send, NULL, "Send packet", cmd_send_packet); //TODO remove later only for test
-NRF_CLI_CMD_REGISTER(config, NULL, "Send config", cmd_send_config); //TODO remove later only for test
 
 
-//TODO subcommands for mode
 NRF_CLI_CREATE_STATIC_SUBCMD_SET(m_sub_mode)
 {
 #if EXTENDED_SUPPORT
@@ -386,7 +538,7 @@ NRF_CLI_CREATE_STATIC_SUBCMD_SET(m_sub_tx_power)
     NRF_CLI_SUBCMD_SET_END
 };
 
-
+NRF_CLI_CMD_REGISTER(info, NULL, "Print current settings", cmd_info);
 NRF_CLI_CMD_REGISTER(channel, NULL, "Set channel \n channel VALUE", cmd_set_channel);
 NRF_CLI_CMD_REGISTER(txpower, &m_sub_tx_power, "Set txpower \n txpower VALUE", cmd_set_txpower);
 NRF_CLI_CMD_REGISTER(mode, &m_sub_mode, "Set mode \n mode VALUE", cmd_set_mode);

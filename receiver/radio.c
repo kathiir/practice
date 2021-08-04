@@ -11,12 +11,12 @@
 
 static uint8_t * m_p_rx_packet = NULL;
 
-
 static radio_config_t * m_p_config = NULL;
 
 static volatile bool packet_received;
 
-
+/**@brief Function for disabling radio module.
+ */
 static void radio_disable(void)
 {
     nrf_radio_shorts_set(0);
@@ -34,7 +34,8 @@ static void radio_disable(void)
     nrf_radio_event_clear(NRF_RADIO_EVENT_DISABLED);
 }
 
-
+/**@brief Function for setting radio channel.
+ */
 static void radio_channel_set(nrf_radio_mode_t mode, uint8_t channel)
 {
 #if SUPPORT_IEEE802154_250KBIT
@@ -69,8 +70,6 @@ static void radio_config(nrf_radio_mode_t mode)
     nrf_radio_txaddress_set(0);
     nrf_radio_rxaddresses_set(1);
 
-
-// TODO 
     nrf_radio_prefix0_set(0xCC);
     nrf_radio_base0_set(0xCCCCCCCC);
 
@@ -85,7 +84,7 @@ static void radio_config(nrf_radio_mode_t mode)
 
     switch (mode)
     {
-    #if SUPPORT_IEEE802154_250KBIT
+    #if EXTENDED_SUPPORT
         case NRF_RADIO_MODE_IEEE802154_250KBIT:
             /* Packet configuration:
              * S1 size = 0 bits,
@@ -111,16 +110,16 @@ static void radio_config(nrf_radio_mode_t mode)
 
 
     nrf_radio_packet_configure(&packet_conf);
-
 }
 
-
-void receive_packet() {
+/**@brief Function for getting ready to receive packet.
+ */
+void receive_packet(void) {
     packet_received = false;
-
 }
 
-
+/**@brief Function for enabling RX mode.
+ */
 void radio_rx(nrf_radio_mode_t mode, uint8_t channel)
 {
     radio_disable();
@@ -143,12 +142,14 @@ void radio_rx(nrf_radio_mode_t mode, uint8_t channel)
 
 }
 
-
+/**@brief Function for checking if packet was received.
+ */
 bool radio_check_packet_received(void) {
     return packet_received;
 }
 
-
+/**@brief Function for radio interrupt handler.
+ */
 void RADIO_IRQHandler(void)
 {
     if (nrf_radio_event_check(NRF_RADIO_EVENT_CRCOK))
@@ -169,10 +170,9 @@ void RADIO_IRQHandler(void)
     }
 }
 
-
+/**@brief Function for initializing radio module.
+ */
 void radio_init(radio_config_t * p_config, uint8_t * p_rx_packet){
-
-
     if (!m_p_config)
     {
         NVIC_EnableIRQ(RADIO_IRQn);

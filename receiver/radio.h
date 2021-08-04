@@ -12,12 +12,11 @@ extern "C" {
 
 
 /** Indicates devices that support 802.15.4 radio mode. */
-#if defined(NRF52840_XXAA) || defined(NRF52833_XXAA)// || defined(NRF52832_XXAA)
+#if defined(NRF52840_XXAA) || defined(NRF52833_XXAA)
     #define SUPPORT_IEEE802154_250KBIT 1
 #else
     #define SUPPORT_IEEE802154_250KBIT 0
 #endif
-
 
 #define IEEE_DEFAULT_FREQ         (5)   /**< IEEE 802.15.4 default frequency. */
 
@@ -41,12 +40,20 @@ typedef struct {
 
 } radio_config_t;
 
-void receive_packet();
+/**@brief Function for getting ready to receive packet.
+ */
+void receive_packet(void);
 
+/**@brief Function for enebling RX mode.
+ */
 void radio_rx(nrf_radio_mode_t mode, uint8_t channel);
 
+/**@brief Function for initializing radio module.
+ */
 void radio_init(radio_config_t * p_config, uint8_t * p_rx_packet);
 
+/**@brief Function checking if packet was received.
+ */
 bool radio_check_packet_received(void);
 
 

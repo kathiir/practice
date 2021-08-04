@@ -13,8 +13,9 @@
 
 #include "nrf_delay.h"
 
-static spi_payload_t spi_payload;
+#define TIMEOUT 255
 
+static spi_payload_t spi_payload;
 
 #define SPIS_INSTANCE 1 
 static const nrfx_spis_t spis = NRFX_SPIS_INSTANCE(SPIS_INSTANCE);
@@ -36,7 +37,9 @@ static volatile bool spis_config_received;
 static volatile bool spis_ack_received;
 
 
-static spi_payload_t spis_get_rx_payload() {
+/**@brief Function for getting payload.
+ */
+static spi_payload_t spis_get_rx_payload(void) {
     spi_payload_t payload;
 
     memcpy(&payload, m_rx_buf + 3, sizeof(payload));
@@ -45,16 +48,11 @@ static spi_payload_t spis_get_rx_payload() {
 }
 
 
-/**
- * @brief SPIS user event handler.
+/**@brief SPIS user event handler.
  */
 static void spis_event_handler(const nrfx_spis_evt_t * event,
                         void * p_context)
 {
-    /*spis_config_received = false;
-    spis_ack_received = false;
-    spis_xfer_done = false;
-*/
     if (event->evt_type == NRFX_SPIS_XFER_DONE)
     {
         spis_xfer_done = true;
@@ -62,14 +60,17 @@ static void spis_event_handler(const nrfx_spis_evt_t * event,
         memcpy(&spi_payload, m_rx_buf + 3, sizeof(spi_payload));
 
 
+        if (spi_payload.type == BOOT) {   
+            NVIC_SystemReset(); //reboot to get default values
+        }
+
+
         if (spi_payload.type == CONFIG_MODE || spi_payload.type == CONFIG_CHANNEL) {   
             spis_config_received = true;
-
         }
 
         if (spi_payload.type == ACKNOWLEDGE) {   
             spis_ack_received = true;
-
         }
     }
 }
@@ -77,7 +78,7 @@ static void spis_event_handler(const nrfx_spis_evt_t * event,
 
 /**@brief Function for configuring and initializing SPIS.
  */
-void spis_init()
+void spis_init(void)
 {
     ret_code_t ret;
 
@@ -92,7 +93,9 @@ void spis_init()
 }
 
 
-uint16_t spis_get_rx_number() {
+/**@brief Function for getting payload number.
+ */
+uint16_t spis_get_rx_number(void) {
     uint16_t num;
 
     memcpy(&num, m_rx_buf, sizeof(num));
@@ -100,7 +103,9 @@ uint16_t spis_get_rx_number() {
     return num;
 }
 
-static uint8_t spis_get_rx_length() {
+/**@brief Function for getting payload length.
+ */
+static uint8_t spis_get_rx_length(void) {
     uint8_t length;
 
     memcpy(&length, m_rx_buf + 2, sizeof(length));
@@ -108,18 +113,20 @@ static uint8_t spis_get_rx_length() {
     return length;
 }
 
-
-
-
-bool spis_check_config_received() {
+/**@brief Function for checking if config was received.
+ */
+bool spis_check_config_received(void) {
     return spis_config_received;
 }
 
+/**@brief Function for getting payload.
+ */
 spi_payload_t spis_get_payload() {
     return spi_payload;
 }
 
-
+/**@brief Function for receiving acknoledge.
+ */
 bool spis_receive_ack(uint16_t count) {
 
 
@@ -132,7 +139,7 @@ bool spis_receive_ack(uint16_t count) {
 
         APP_ERROR_CHECK(nrfx_spis_buffers_set(&spis, m_tx_buf, m_tx_length, m_rx_buf, m_rx_length));
 
-        uint8_t timeout = 100;
+        uint8_t timeout = TIMEOUT;
         while (!spis_xfer_done && timeout--)
         {
             __WFE();
@@ -153,7 +160,8 @@ bool spis_receive_ack(uint16_t count) {
 
 
 
-//TODO count
+/**@brief Function for setting payload.
+ */
 void spis_set_tx_message(uint8_t * p_packet, uint8_t length) {
 
     uint16_t num = 0;
@@ -173,16 +181,16 @@ void spis_set_tx_message(uint8_t * p_packet, uint8_t length) {
 
 
 
-    uint16_t crc = crc16_compute(m_tx_buf, sizeof(num) + 1 + 1 + length, NULL); //TODO length
+    uint16_t crc = crc16_compute(m_tx_buf, sizeof(num) + 1 + 1 + length, NULL); 
     memcpy(m_tx_buf + sizeof(num) + 1 + 1 + length, &crc, sizeof(crc));
     
     spis_xfer_done = false;
     
     APP_ERROR_CHECK(nrfx_spis_buffers_set(&spis, m_tx_buf, m_tx_length, m_rx_buf, m_rx_length));
 
-    uint8_t timeout = 100;
 
-    while (!spis_xfer_done && timeout--) //TODO timeout
+    uint8_t timeout = TIMEOUT;
+    while (!spis_xfer_done && timeout--)
     {
         __WFE();
         nrf_delay_ms(1);
@@ -192,16 +200,11 @@ void spis_set_tx_message(uint8_t * p_packet, uint8_t length) {
 
     memset(m_rx_buf, 0, m_rx_length);
     memset(m_tx_buf, 0, m_tx_length);
-/*
-    spis_config_received = false;
-    spis_ack_received = false;
-    spis_xfer_done = false;
 
-    APP_ERROR_CHECK(nrfx_spis_buffers_set(&spis, m_tx_buf, m_tx_length, m_rx_buf, m_rx_length));
-*/
 }
 
-
+/**@brief Function for sending acknoledge.
+ */
 void spis_send_ack(uint16_t count) {
 
     memset(m_tx_buf, 0, m_tx_length);
@@ -219,25 +222,25 @@ void spis_send_ack(uint16_t count) {
     memcpy(m_tx_buf + sizeof(count) + 1, &message, 1);    
     
     
-    uint16_t crc = crc16_compute(m_tx_buf, sizeof(count) + 1 + length, NULL); //TODO length
+    uint16_t crc = crc16_compute(m_tx_buf, sizeof(count) + 1 + length, NULL);
     memcpy(m_tx_buf + sizeof(count) + 1 + length, &crc, sizeof(crc));
 
     spis_xfer_done = false;
 
     APP_ERROR_CHECK(nrfx_spis_buffers_set(&spis, m_tx_buf, m_tx_length, m_rx_buf, m_rx_length));
 
-    uint8_t timeout = 255;
-    while (!spis_xfer_done && timeout--) //TODO timeout
+    uint8_t timeout = TIMEOUT;
+    while (!spis_xfer_done && timeout--)
     {
         __WFE();
         nrf_delay_ms(1);
     }
 
-    //nrf_delay_ms(100);
 }
 
-
-void spis_receive_config() {
+/**@brief Function for receiving config.
+ */
+void spis_receive_config(void) {
     spis_config_received = false;
     spis_ack_received = false;
     spis_xfer_done = false;
@@ -250,6 +253,5 @@ void spis_receive_config() {
 
     err_code = nrfx_spis_buffers_set(&spis, m_tx_buf, m_tx_length, m_rx_buf, m_rx_length);
     APP_ERROR_CHECK(err_code);
-  
 }
 

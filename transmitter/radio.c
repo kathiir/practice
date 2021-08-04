@@ -13,7 +13,7 @@
 static uint8_t * m_p_tx_packet;
 
 
-static const radio_config_t * m_p_config = NULL;
+static radio_config_t * m_p_config = NULL;
 
 static bool radio_random_message = true;
 
@@ -61,6 +61,7 @@ static void radio_channel_set(nrf_radio_mode_t mode, uint8_t channel)
         if ((channel >= IEEE_MIN_CHANNEL) && (channel <= IEEE_MAX_CHANNEL))
         {
             nrf_radio_frequency_set(CHAN_TO_FREQ(IEEE_FREQ_CALC(channel)));
+            m_p_config->channel = channel;
         }
         else
         {
@@ -68,14 +69,15 @@ static void radio_channel_set(nrf_radio_mode_t mode, uint8_t channel)
         }
     } else {
         nrf_radio_frequency_set(CHAN_TO_FREQ(channel));
+        m_p_config->channel = channel;
     }
 #else
     nrf_radio_frequency_set(CHAN_TO_FREQ(channel));
+    m_p_config->channel = channel;
 #endif
 }
 
 
-//TODO diff modes
 /**@brief Function for configuring the radio packet.
  */
 static void radio_config(nrf_radio_mode_t mode)
@@ -85,11 +87,10 @@ static void radio_config(nrf_radio_mode_t mode)
     nrf_radio_modecnf0_set(false, RADIO_MODECNF0_DTX_Center);
     nrf_radio_crc_configure(RADIO_CRCCNF_LEN_Two, NRF_RADIO_CRC_ADDR_SKIP, 0x1021);
 
-
     nrf_radio_txaddress_set(0);
     nrf_radio_rxaddresses_set(1);
 
-// TODO 
+    //address
     nrf_radio_prefix0_set(0xCC);
     nrf_radio_base0_set(0xCCCCCCCC);
 
@@ -130,7 +131,6 @@ static void radio_config(nrf_radio_mode_t mode)
 
 
     nrf_radio_packet_configure(&packet_conf);
-
 }
 
 
@@ -140,25 +140,28 @@ static void generate_packet(nrf_radio_mode_t mode, uint16_t count)
 {
 
 #if EXTENDED_SUPPORT
-    if (mode == NRF_RADIO_MODE_IEEE802154_250KBIT)
-    {
-        m_p_tx_packet[0] = IEEE_MAX_PAYLOAD_LEN - 1;
-    }
-    else
-    {
-        m_p_tx_packet[0] = RADIO_MAX_PAYLOAD_LEN - 1;
+    if (radio_random_message) {
+        if (mode == NRF_RADIO_MODE_IEEE802154_250KBIT)
+        {
+            m_p_tx_packet[0] = IEEE_MAX_PAYLOAD_LEN - 1;
+        }
+        else
+        {
+            m_p_tx_packet[0] = RADIO_MAX_PAYLOAD_LEN - 1;
+        }
     }
 #else
-    m_p_tx_packet[0] = RADIO_MAX_PAYLOAD_LEN - 1;
+    if (radio_random_message) {
+        m_p_tx_packet[0] = RADIO_MAX_PAYLOAD_LEN - 1;
+    }
 #endif
 
     memcpy(m_p_tx_packet + 1, &count, sizeof(count));
 
     if (radio_random_message) {
-        for (uint8_t i = 3; i < RADIO_MAX_PAYLOAD_LEN; i++)
+        for (uint8_t i = 3; i < m_p_tx_packet[0] + 1; i++)
         {
-            //m_p_tx_packet[i] = rnd8();
-            m_p_tx_packet[i] = 0xAA;
+            m_p_tx_packet[i] = rnd8();
         }
     }
 
@@ -166,7 +169,8 @@ static void generate_packet(nrf_radio_mode_t mode, uint16_t count)
 }
 
 
-//TODO check size, include crc and lenght with packet number
+/**@brief Function for setting message.
+ */
 bool radio_set_message(uint8_t * message, size_t size) {
 
     if (size >= RADIO_MAX_PAYLOAD_LEN - 3) {
@@ -177,11 +181,15 @@ bool radio_set_message(uint8_t * message, size_t size) {
 
     memcpy(m_p_tx_packet + 3, message, size);
 
+    m_p_tx_packet[0] = (uint8_t) size;
+
     return true;
 }
 
 
-void radio_generate_random_message() {
+/**@brief Function for setting generation of random message.
+ */
+void radio_generate_random_message(void) {
     radio_random_message = true;
 }
 
@@ -195,6 +203,9 @@ void radio_config_mode(nrf_radio_mode_t mode) {
     
     
     nrf_radio_mode_set(mode);
+
+    m_p_config->mode = mode;
+
 }
 
 
@@ -215,9 +226,12 @@ void radio_config_tx_power(nrf_radio_txpower_t txpower) {
     radio_disable();
 
     nrf_radio_txpower_set(txpower);
+
+    m_p_config->txpower = txpower;
 }
 
-
+/**@brief Function for sending radio packet.
+ */
 void radio_send_packet(uint16_t count)
 {
     generate_packet(m_p_config->mode, count);
@@ -255,8 +269,6 @@ void radio_send_packet(uint16_t count)
 }
 
 
-
-//TODO
 /**@brief Interrupt handler.
  */
 void RADIO_IRQHandler(void)
@@ -265,10 +277,6 @@ void RADIO_IRQHandler(void)
     {
         nrf_radio_event_clear(NRF_RADIO_EVENT_END);
 
-
-        NRF_LOG_RAW_INFO("Delivered.\n");
-
-        //TODO
         radio_disable();
         
     }

@@ -67,14 +67,13 @@
   <Watches active="0" update="Never"/>
  </Watch4>
  <Files>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="61" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../main.c" selected="0" top="53" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="46" useTextEdit="1" openedFrom="C:/nRF5_SDK_17.0.2_d674dde/projects/receiver/main.c" useBinaryEdit="0" left="0" path="../../../rcea_receiver.c" selected="1" top="51" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="18" y="16" useTextEdit="1" openedFrom="C:/nRF5_SDK_17.0.2_d674dde/projects/receiver/rcea_receiver.c" useBinaryEdit="0" left="0" path="../../../rcea_receiver.h" selected="0" top="0" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="7" y="166" useTextEdit="1" openedFrom="C:/nRF5_SDK_17.0.2_d674dde/projects/receiver/rcea_receiver.c" useBinaryEdit="0" left="0" path="../../../radio.c" selected="0" top="76" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="211" useTextEdit="1" openedFrom="C:/nRF5_SDK_17.0.2_d674dde/projects/receiver/rcea_receiver.c" useBinaryEdit="0" left="0" path="../../../spis.c" selected="0" top="39" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="43" useTextEdit="1" openedFrom="C:/nRF5_SDK_17.0.2_d674dde/projects/receiver/spis.c" useBinaryEdit="0" left="0" path="../../../radio.h" selected="0" top="36" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="28" y="13" useTextEdit="1" openedFrom="C:/nRF5_SDK_17.0.2_d674dde/projects/receiver/spis.c" useBinaryEdit="0" left="0" path="../../../spis.h" selected="0" top="0" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="420" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../../modules/nrfx/drivers/src/nrfx_spis.c" selected="0" top="394" codecName=""/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="37" y="31" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../main.c" selected="0" top="30" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="39" y="25" useTextEdit="1" openedFrom="C:/nRF5_SDK_17.0.2_d674dde/projects/receiver/main.c" useBinaryEdit="0" left="0" path="../../../rcea_receiver.c" selected="0" top="6" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="172" useTextEdit="1" openedFrom="C:/nRF5_SDK_17.0.2_d674dde/projects/receiver/rcea_receiver.c" useBinaryEdit="0" left="0" path="../../../radio.c" selected="0" top="144" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="30" y="254" useTextEdit="1" openedFrom="C:/nRF5_SDK_17.0.2_d674dde/projects/receiver/rcea_receiver.c" useBinaryEdit="0" left="0" path="../../../spis.c" selected="0" top="213" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditRight" x="3" y="68" useTextEdit="1" openedFrom="C:/nRF5_SDK_17.0.2_d674dde/projects/receiver/spis.c" useBinaryEdit="0" left="0" path="../../../spis.h" selected="1" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditRight" x="3" y="51" useTextEdit="1" openedFrom="C:/nRF5_SDK_17.0.2_d674dde/projects/receiver/spis.c" useBinaryEdit="0" left="0" path="../../../radio.h" selected="0" top="21" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditRight" x="20" y="16" useTextEdit="1" openedFrom="C:/nRF5_SDK_17.0.2_d674dde/projects/receiver/rcea_receiver.c" useBinaryEdit="0" left="0" path="../../../rcea_receiver.h" selected="0" top="0" codecName="Default"/>
  </Files>
  <ARMCrossStudioWindow activeProject="receiver_pca10040" fileDialogDefaultFilter="*.c;*.cpp;*.cxx;*.cc;*.h;*.hpp;*.hxx" autoConnectTarget="J-Link" buildConfiguration="Release" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="C:/nRF5_SDK_17.0.2_d674dde/components/libraries/crc16" debugSearchPath="" autoConnectCapabilities="3711"/>
 </session>

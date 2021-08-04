@@ -14,7 +14,7 @@ extern "C" {
 #define RCEA_SPI_ACKNOWLEDGE       1
 #define RCEA_SPI_CONFIG_CHANNEL    2
 #define RCEA_SPI_CONFIG_MODE       3
-#define RCEA_SPI_WAITING_FOR_ACK   4
+#define RCEA_SPI_BOOT              4
 #define RCEA_SPI_PACKET            5
 
 
@@ -24,7 +24,7 @@ typedef enum {
     ACKNOWLEDGE = RCEA_SPI_ACKNOWLEDGE,
     CONFIG_MODE = RCEA_SPI_CONFIG_CHANNEL,
     CONFIG_CHANNEL = RCEA_SPI_CONFIG_MODE,
-    WAIT_ACK = RCEA_SPI_WAITING_FOR_ACK,
+    BOOT = RCEA_SPI_BOOT,
     PACKET = RCEA_SPI_PACKET
 } spi_message_t;
 
@@ -57,6 +57,8 @@ bool spim_transfer_mode(nrf_radio_mode_t mode, uint16_t count);
 /**@brief Function for transferring radio packet from receiver via SPI.
  */
 bool spim_receive_packet(uint8_t * p_packet, size_t length, uint16_t count);
+
+
 
 
 

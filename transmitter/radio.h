@@ -47,19 +47,19 @@ typedef struct {
 void radio_init(radio_config_t * p_config, uint8_t * p_tx_packet);
 
 
-//TODO
 /**@brief Function for sending radio packet.
- *//*
-void send_packet(nrf_radio_mode_t mode,
-                 nrf_radio_txpower_t txpower,
-                 uint8_t channel);
-*/
+ */
 void radio_send_packet(uint16_t count);
 
 
+/**@brief Function for setting message.
+ */
 bool radio_set_message(uint8_t * message, size_t size);
 
-void radio_generate_random_message();
+
+/**@brief Function for setting generation of random message.
+ */
+void radio_generate_random_message(void);
 
 
 /**@brief Function for setting radio mode.

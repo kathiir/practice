@@ -1432,7 +1432,7 @@
 
 // <o> NRF_CLI_PRINTF_BUFF_SIZE - Maximum print buffer size. 
 #ifndef NRF_CLI_PRINTF_BUFF_SIZE
-#define NRF_CLI_PRINTF_BUFF_SIZE 23
+#define NRF_CLI_PRINTF_BUFF_SIZE 200
 #endif
 
 // <e> NRF_CLI_HISTORY_ENABLED - Enable CLI history mode.
@@ -1470,7 +1470,7 @@
  
 
 #ifndef NRF_CLI_LOG_BACKEND
-#define NRF_CLI_LOG_BACKEND 1
+#define NRF_CLI_LOG_BACKEND 0
 #endif
 
 // <q> NRF_CLI_USES_TASK_MANAGER_ENABLED  - Enable CLI to use task_manager
@@ -1562,7 +1562,7 @@
  
 
 #ifndef NRF_FPRINTF_DOUBLE_ENABLED
-#define NRF_FPRINTF_DOUBLE_ENABLED 0
+#define NRF_FPRINTF_DOUBLE_ENABLED 1
 #endif
 
 // </h> 
